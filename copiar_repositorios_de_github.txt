@@ -1,0 +1,12 @@
+// copio el repositorio que quiero en la carpeta que quiero 
+
+git clone https://github.com/usuario/repositorio.git
+cd repositorio
+code .
+
+para modificar los cambios y subirlos 
+
+git add .
+git commit -m "tu mensaje"
+git push origin main
+
