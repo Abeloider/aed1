@@ -1,0 +1,149 @@
+  in strategy.maude
+
+  mod NIM is
+    protecting MACHINE-INT .
+    sorts Pebble Bag State .
+    subsorts Pebble < Bag .
+    
+    op o : -> Pebble .
+    op emptyBag : -> Bag .
+    op __ : Bag Bag -> Bag [assoc id: emptyBag] .
+    op <_;_> : Bag Bag -> State .
+    op size : Bag -> MachineInt .
+    op readjust : Bag Bag -> Bag .
+    
+    vars X Y Z : Bag .
+    
+    eq size((o  X)) 
+       = size(X) + 1 .
+    eq size(emptyBag)
+       = 0 .
+    
+    eq readjust(X, Y)
+       = if size((X X)) <= size(Y) 
+         then (X X) 
+         else Y 
+         fi .
+    
+    crl [mv] : < (X Y) ;  Z > 
+       => < Y ;  readjust(X, Y) >
+          if size(X) <= size(Z) and (X =/= emptyBag) .
+  endm
+
+  fmod NIM-STRATEGY is
+    protecting STRATEGY .
+    
+    op moveToWin : -> Strategy .
+    op findWinMove : Term Term -> Term .
+    op noWinMove : -> Term .
+    op NIM : -> Module .
+
+    var T X Y Z : Term . 
+    var M : Module .
+
+    eq NIM  
+      = (mod 'NIM is
+           including 'BOOL .
+           including 'MACHINE-INT .
+           sorts 'Pebble ; 'Bag ; 'State .
+           subsort 'Pebble < 'Bag .
+           op 'o : nil -> 'Pebble [none] .
+           op 'emptyBag : nil -> 'Bag [none] .
+           op '__ : ('Bag 'Bag) -> 'Bag 
+               [assoc id({'emptyBag}'Bag)] .
+           op '<_;_> : ('Bag 'Bag) -> 'State [none] .
+           op 'size : 'Bag -> 'MachineInt [none].
+           op 'readjust : ('Bag 'Bag) -> 'Bag [none] .
+           var 'X : 'Bag .
+           var 'Y : 'Bag .
+           var 'Z : 'Bag .
+           none
+           eq 'size['__[{'o}'Pebble, 'X]] 
+             = '_+_['size['X], {'1}'MachineInt] .
+           eq 'size[{'emptyBag}'Bag] = {'0}'MachineInt .
+           eq 'readjust['X, 'Y]  
+             = 'if_then_else_fi[
+                  '_<=_['size['__['X, 'X]], 'size['Y]], 
+                  '__['X, 'X], 
+                  'Y] .
+           crl['mv]: '<_;_>['__['X, 'Y], 'Z] 
+             => '<_;_>['Y, 'readjust['X, 'Y]]
+                if '_and_['_<=_['size['X], 'size['Z]], 
+                          '_=/=_['X, {'emptyBag}'Bag]] 
+                   = {'true}'Bool .
+         endm) .
+
+    eq rewInWith(M, T, nilBindingList, moveToWin) 
+      = if findWinMove(T, {'o}'Pebble) == noWinMove
+        then failure
+        else rewInWith(M, findWinMove(T, {'o}'Pebble), 
+                nilBindingList, idle) 
+        fi .
+    
+    eq findWinMove('<_;_>[X, Y], Z) 
+      = if meta-reduce(NIM, '_>=_['size[Y], 'size[Z]]) 
+             == {'true}'Bool
+        then (if findWinMove(
+                    extTerm(
+                       meta-apply(NIM, '<_;_>[X, Y], 
+                          'mv, ('X <- Z), 0)), {'o}'Pebble) 
+                  == noWinMove
+              then extTerm(
+                      meta-apply(NIM, '<_;_>[X, Y], 
+                         'mv, ('X <- Z), 0))
+              else findWinMove('<_;_>[X, Y], '__[Z, {'o}'Pebble]) 
+              fi)
+        else noWinMove 
+        fi .
+
+  endfm
+
+  rew rewInWith(NIM, 
+         '<_;_>['__[{'o}'Pebble, {'o}'Pebble, {'o}'Pebble,
+                    {'o}'Pebble, {'o}'Pebble, {'o}'Pebble,
+                    {'o}'Pebble],
+                '__[{'o}'Pebble, {'o}'Pebble, {'o}'Pebble]],
+         nilBindingList, moveToWin) .
+  *** result StrategyExpression: 
+  ***    rewInWith(
+  ***       mod 'NIM is
+  ***          including 'BOOL .
+  ***          including 'MACHINE-INT .
+  ***          sorts 'Pebble ; 'Bag ; 'State .
+  ***          subsort 'Pebble < 'Bag .
+  ***          op 'o : nil -> 'Pebble [none] .
+  ***          op 'emptyBag : nil -> 'Bag [none] .
+  ***          op '__ : ('Bag 'Bag) -> 'Bag 
+  ***              [assoc id({'emptyBag}'Bag)] .
+  ***          op '<_;_> : ('Bag 'Bag) -> 'State [none] .
+  ***          op 'size : 'Bag -> 'MachineInt [none].
+  ***          op 'readjust : ('Bag 'Bag) -> 'Bag [none] .
+  ***          var 'X : 'Bag .
+  ***          var 'Y : 'Bag .
+  ***          var 'Z : 'Bag .
+  ***          none
+  ***          eq 'size['__[{'o}'Pebble, 'X]] 
+  ***            = '_+_['size['X], {'1}'MachineInt] .
+  ***          eq 'size[{'emptyBag}'Bag] = {'0}'MachineInt .
+  ***          eq 'readjust['X, 'Y]  
+  ***            = 'if_then_else_fi[
+  ***                 '_<=_['size['__['X, 'X]], 'size['Y]], 
+  ***                 '__['X, 'X], 
+  ***                 'Y] .
+  ***          crl['mv]: '<_;_>['__['X, 'Y], 'Z] 
+  ***            => '<_;_>['Y, 'readjust['X, 'Y]]
+  ***               if '_and_['_<=_['size['X], 'size['Z]], 
+  ***                         '_=/=_['X, {'emptyBag}'Bag]] 
+  ***                  = {'true}'Bool .
+  ***        endm, 
+  ***        '<_;_>['__[{'o}'Pebble,{'o}'Pebble,{'o}'Pebble,
+  ***                   {'o}'Pebble,{'o}'Pebble],
+  ***               '__[{'o}'Pebble,{'o}'Pebble,{'o}'Pebble,
+  ***                   {'o}'Pebble]], 
+  ***        nilBindingList, 
+  ***        idle)
+
+  rew rewInWith(NIM, 
+         '<_;_>['__[{'o}'Pebble, {'o}'Pebble, {'o}'Pebble], 
+                    {'o}'Pebble], nilBindingList, moveToWin) .
+  *** result StrategyExpression: failure

@@ -1,0 +1,266 @@
+fmod BINARY-NAT is
+  protecting MACHINE-INT .
+  sorts Bit Bits .
+  subsort Bit < Bits .
+
+  ops 0 1 : -> Bit .
+
+  op __ : Bits Bits -> Bits [assoc] .
+  op |_| : Bits -> MachineInt .
+  op not_ : Bits -> Bits .
+  op normalize : Bits -> Bits . --- foo
+  ops _+_ _*_ : Bits Bits -> Bits [assoc comm] .
+  op _^_ : Bits Bits -> Bits .
+  op _>_ : Bits Bits -> Bool .
+  op _?_:_ : Bool Bits Bits -> Bits .
+
+  vars S T : Bits .
+  vars B C : Bit .
+  var L : Bool .
+
+  *** Lenght
+  eq | B | = 1 .
+  eq | S B | = | S | + 1 .
+
+  *** Not
+  eq not (S T) = (not S) (not T) .
+  eq not 0 = 1 .
+  eq not 1 = 0 .
+
+  *** Normalize supresses zeros at the left of a binary number
+  eq normalize(0 S) = normalize(S) .
+  eq normalize(1 S) = 1 S .
+
+  *** Greater than
+  eq 0 > S = false .
+  eq 1 > (0).Bit = true .
+  eq 1 > (1).Bit = false .
+  eq B > (0 S) = B > S .
+  eq B > (1 S) = false .
+  eq (1 S) > B = true .
+  eq (B S) > (C T) 
+    = if | normalize(B S) | > | normalize(C T) |
+      then true
+      else if | normalize(B S) | < | normalize(C T) |
+           then false
+           else (S > T)
+           fi
+      fi .
+
+  *** Binary addition
+  eq 0 + S = S .
+  eq 1 + 1 = 1 0 .
+  eq 1 + (T 0) = T 1 .
+  eq 1 + (T 1) = (T + 1) 0 .
+  eq (S B) + (T 0) = (S + T) B .
+  eq (S 1) + (T 1) = (S + T + 1) 0 .
+
+  *** Binary multiplication
+  eq 0 * T = 0 .
+  eq 1 * T = T .
+  eq (S B) * T = ((S * T) 0) + (B * T) .
+
+  *** Binary exponentiation
+  eq T ^ 0 = 1 .
+  eq T ^ 1 = T .
+  eq T ^ (S B) = (T ^ S) * (T ^ S) * (T ^ B) .
+
+  *** Mixfix ?: operator
+  eq L ? S : T = if L then S else T fi .
+endfm
+
+red | 1 0 1 1 0 | .
+*** result NzMachineInt: 5
+
+red 0 (not 1) 0 .
+*** result Bits: 0 0 0
+
+red not (1 0 1) .
+*** result Bits: 0 1 0
+
+red (1 0 0) + (1 1 1) .
+*** result Bits: 1 0 1 1
+
+red (1 1 1) * (1 1 0) .
+*** result Bits: 1 0 1 0 1 0
+
+red (0 1 0 1) > (1 1) .
+*** result Bool: true
+
+red ((1 0) > (0 1 1)) ? ((1 0) * 1) : ((1 0) + 1) .
+*** result Bits: 1 1
+
+red ((1 0) + (1 0)) * (1 1) .
+*** result Bits: 1 1 0 0
+
+red ((1 0) > 1) and ((1 1) > (1 0)) .
+*** result Bool: true
+
+red (1).Bit * 0 .
+*** result Bit: 0
+
+red (1 0) + (1 0) + (1 0) .
+*** result Bits: 1 1 0
+
+red (1).Bit .
+*** result Bit: 1
+
+red (1 + 1).Bits .
+*** result Bits: 1 0
+
+red 1 + (1).MachineInt .
+*** result NzMachineInt: 2
+
+red not (1 0 1 1) .
+*** result Bits: 0 1 0 0
+
+red _>_(1 0,1) .
+*** result Bool: true
+
+red _?_:_(1 > 1 0, 1, 0) .
+*** result Bit: 0
+
+red (1 1) + (1 1) + (1 1) + (1 1) .
+*** result Bits: 1 1 0 0
+
+red _+_(1 1, 1 1, 1 1, 1 1) .
+*** result Bits: 1 1 0 0
+
+red 1 0 + 1 0 .
+*** result Bits: 1 1 0
+
+red not 0 1 0 .
+*** result Bits: 1 1 0
+
+red (1 0) + (1 0) * (1 0) .
+*** result Bits: 1 1 0
+
+red (1 0) * (1 0) + (1 0) .
+*** result Bits: 1 0 0 0
+
+red 1 1 > 1 ? 1 : 0 .
+***(
+WARNING: <standard input>, line 894: Ambiguous term, two parses are:
+(1 1) > 1 ? 1 : 0
+-versus-
+1 (1 > 1) ? 1 : 0
+
+Arbitrarily taking the first as correct.
+result Bit: 1
+)
+
+red 1 1 1 > 1 ? 1 : 0 .
+***(
+WARNING: <standard input>, line 895: Ambiguous term, two parses are:
+(1 1 1) > 1 ? 1 : 0
+-versus-
+1 ((1 1) > 1) ? 1 : 0
+
+Arbitrarily taking the first as correct.
+result Bit: 1
+)
+
+red (1 1) ^ (1 1) ^ (1 1) .
+***(
+WARNING: <standard input>, line 896: Ambiguous term, two parses are:
+(1 1) ^ ((1 1) ^ 1 1)
+-versus-
+((1 1) ^ 1 1) ^ 1 1
+ 
+Arbitrarily taking the first as correct.
+result Bits: 1 1 0 1 1 1 0 1 1 1 1 0 1 1 1 1 0 0 1 0 0 0 0 0 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 0 1 1
+)
+
+fmod BINARY-NAT-PREC is
+  protecting MACHINE-INT .
+  sorts Bit Bits .
+  subsort Bit < Bits .
+
+  ops 0 1 : -> Bit .
+
+  op __ : Bits Bits -> Bits [assoc prec 1 gather (e E)] .
+  op |_| : Bits -> MachineInt . *** Lenght
+  op not_ : Bits -> Bits [prec 2 gather (E)] .
+  op normalize : Bits -> Bits .
+  op _+_  : Bits Bits -> Bits [assoc comm prec 5 gather (E e)] .
+  op _*_  : Bits Bits -> Bits [assoc comm prec 4 gather (E e)] .
+  op _^_  : Bits Bits -> Bits [prec 3 gather (e E)] .
+  op _>_  : Bits Bits -> Bool [prec 6 gather (E E)] .
+  op _?_:_ : Bool Bits Bits -> Bits [prec 7 gather (& E E)] .
+
+  vars S T : Bits .
+  vars B C : Bit .
+  var L : Bool .
+
+  *** Lenght
+  eq | B | = 1 .
+  eq | S B | = | S | + 1 .
+
+  *** Not
+  eq not (S T) = (not S) (not T) .
+  eq not 0 = 1 .
+  eq not 1 = 0 .
+
+  *** Normalize supresses zeros at the left of a binary number
+  eq normalize(0 S) = normalize(S) .
+  eq normalize(1 S) = 1 S .
+
+  *** Greater than
+  eq 0 > S = false .
+  eq 1 > (0).Bit = true .
+  eq 1 > (1).Bit = false .
+  eq B > (0 S) = B > S .
+  eq B > (1 S) = false .
+  eq (1 S) > B = true .
+  eq (B S) > (C T) 
+    = if | normalize(B S) | > | normalize(C T) |
+      then true
+      else if | normalize(B S) | < | normalize(C T) |
+           then false
+           else (S > T)
+           fi
+      fi .
+
+  *** Binary addition
+  eq 0 + S = S .
+  eq 1 + 1 = 1 0 .
+  eq 1 + (T 0) = T 1 .
+  eq 1 + (T 1) = (T + 1) 0 .
+  eq (S B) + (T 0) = (S + T) B .
+  eq (S 1) + (T 1) = (S + T + 1) 0 .
+
+  *** Binary multiplication
+  eq 0 * T = 0 .
+  eq 1 * T = T .
+  eq (S B) * T = ((S * T) 0) + (B * T) .
+
+  *** Binary exponentiation
+  eq T ^ 0 = 1 .
+  eq T ^ 1 = T .
+  eq T ^ (S B) = (T ^ S) * (T ^ S) * (T ^ B) .
+
+  *** Mixfix ?: operator
+  eq L ? S : T = if L then S else T fi .
+endfm
+ 
+red 1 0 + 1 0 .
+*** result Bits: 1 0 0
+
+red 1 (0 + 1) 0 .
+*** result Bits: 1 1 0
+
+red (1 0) + (1 0) * (1 0) .
+*** result Bits: 1 1 0
+
+red (1 0) * (1 0) + (1 0) .
+*** result Bits: 1 1 0
+
+red 1 0 + 1 0 * 1 0 .
+*** result Bits: 1 1 0
+
+red 1 0 ^ 1 1 ^ 1 0 .
+*** result Bits: 1 0 0 0 0 0 0 0 0 0
+
+red (1 0 ^ 1 1) ^ 1 0 .
+*** result Bits: 1 0 0 0 0 0 0
+

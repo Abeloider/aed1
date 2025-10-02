@@ -1,0 +1,498 @@
+***
+***	Maude interpreter standard prelude version 1.0.5.
+***	Copyright 1998-2000 SRI International.
+***
+***	Some of the overall structure is taken from the OBJ3
+***	interpreter standard prelude.
+***
+
+set include BOOL off .
+
+fmod TRUTH-VALUE is
+  sort Bool .
+  op true : -> Bool [special (id-hook SystemTrue)] .
+  op false : -> Bool [special (id-hook SystemFalse)] .
+endfm
+
+fmod TRUTH is
+  protecting TRUTH-VALUE .
+  op if_then_else_fi : Bool Universal Universal -> Universal 
+	[special (id-hook BranchSymbol
+		  term-hook trueTerm (true)
+		  term-hook falseTerm (false))] .
+
+  op _==_ : Universal Universal -> Bool 
+	[prec 51
+         special (id-hook EqualitySymbol
+		  term-hook equalTerm (true)
+		  term-hook notEqualTerm (false))] .
+
+  op _=/=_ : Universal Universal -> Bool 
+	[prec 51
+         special (id-hook EqualitySymbol
+		  term-hook equalTerm (false)
+		  term-hook notEqualTerm (true))] .
+endfm
+
+fmod BOOL is
+  protecting TRUTH .
+  op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+  op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+  op _xor_ : Bool Bool -> Bool [assoc comm prec 57] .
+  op not_ : Bool -> Bool [prec 53] .
+  op _implies_ : Bool Bool -> Bool [gather (e E) prec 61] .
+  vars A B C : Bool .
+  eq true and A = A .
+  eq false and A = false .
+  eq A and A = A .
+  eq false xor A = A .
+  eq A xor A = false .
+  eq A and (B xor C) = A and B xor A and C .
+  eq not A = A xor true .
+  eq A or B = A and B xor A xor B .
+  eq A implies B = not(A xor A and B) .
+endfm
+
+set include BOOL on .
+
+fmod IDENTICAL is
+  op _===_ : Universal Universal -> Bool 
+	[prec 51 strat (0) 
+         special (id-hook EqualitySymbol
+		  term-hook equalTerm (true)
+		  term-hook notEqualTerm (false))] .
+
+  op _=/==_ : Universal Universal -> Bool 
+        [prec 51 strat (0) 
+	 special (id-hook EqualitySymbol
+		  term-hook equalTerm (false)
+		  term-hook notEqualTerm (true))] .
+endfm
+
+fmod MACHINE-INT is
+  sorts MachineInt NzMachineInt .
+  subsort NzMachineInt < MachineInt .
+  op <MachineInts> : -> NzMachineInt [special (id-hook MachineIntegerSymbol)] .
+  op <MachineInts> : -> MachineInt [special (id-hook MachineIntegerSymbol)] .
+
+  op -_ : MachineInt -> MachineInt 
+	[prec 15
+	 special (id-hook MachineIntegerOpSymbol (-)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op -_ : NzMachineInt -> NzMachineInt 
+	[prec 15
+	 special (id-hook MachineIntegerOpSymbol (-)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op ~_ : MachineInt -> MachineInt 
+	[prec 15
+	 special (id-hook MachineIntegerOpSymbol (~)
+		  op-hook machineIntBaseSymbol 
+			  (<MachineInts> : -> MachineInt))] .
+
+  op _+_ : MachineInt MachineInt -> MachineInt 
+	[prec 33 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (+)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _-_ : MachineInt MachineInt -> MachineInt 
+        [prec 33 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (-)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _*_ : MachineInt MachineInt -> MachineInt 
+        [prec 31 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (*)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _*_ : NzMachineInt NzMachineInt -> NzMachineInt 
+	[prec 31 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (*)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _/_ : MachineInt NzMachineInt -> MachineInt 
+	[prec 31 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (/)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _%_ : MachineInt NzMachineInt -> MachineInt 
+	[prec 31 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (%)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _&_ : MachineInt MachineInt -> MachineInt 
+	[prec 53 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (&)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _|_ : MachineInt MachineInt -> MachineInt 
+	[prec 57 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (|)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _|_ : NzMachineInt NzMachineInt -> NzMachineInt 
+	[prec 57 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (|)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _^_ : MachineInt MachineInt -> MachineInt 
+	[prec 55 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (^)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _>>_ : MachineInt MachineInt -> MachineInt 
+	[prec 35 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (>>)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _<<_ : MachineInt MachineInt -> MachineInt 
+	[prec 35 gather (E e)
+	 special (id-hook MachineIntegerOpSymbol (<<)
+		  op-hook machineIntBaseSymbol 
+                          (<MachineInts> : -> MachineInt))] .
+
+  op _<_ : MachineInt MachineInt -> Bool 
+	[prec 37
+	 special (id-hook MachineIntegerOpSymbol (<)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt)
+		  term-hook trueTerm (true)
+	          term-hook falseTerm (false))] .
+
+  op _<=_ : MachineInt MachineInt -> Bool 
+	[prec 37
+	 special (id-hook MachineIntegerOpSymbol (<=)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt)
+		  term-hook trueTerm (true)
+		  term-hook falseTerm (false))] .
+
+  op _>_ : MachineInt MachineInt -> Bool 
+	[prec 37
+	 special (id-hook MachineIntegerOpSymbol (>)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt)
+		  term-hook trueTerm (true)
+		  term-hook falseTerm (false))] .
+
+  op _>=_ : MachineInt MachineInt -> Bool 
+	[prec 37
+	 special (id-hook MachineIntegerOpSymbol (>=)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt)
+		  term-hook trueTerm (true)
+		  term-hook falseTerm (false))] .
+endfm
+
+fmod QID is
+  protecting MACHINE-INT .
+  sorts Qid MachineInt? .
+  subsort MachineInt < MachineInt? .
+  op <Qids> : -> Qid [special (id-hook QuotedIdentifierSymbol)] .
+
+  op conc : Qid Qid -> Qid 
+	[special (id-hook QuotedIdentifierOpSymbol (conc)
+		  op-hook qidBaseSymbol (<Qids> : -> Qid))] .
+
+  op index : Qid MachineInt -> Qid 
+	[special (id-hook QuotedIdentifierOpSymbol (index)
+		  op-hook qidBaseSymbol (<Qids> : -> Qid)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt))] .
+
+  op strip : Qid -> Qid 
+	[special (id-hook QuotedIdentifierOpSymbol (strip)
+		  op-hook qidBaseSymbol (<Qids> : -> Qid))] .
+
+  op convert : Qid -> MachineInt?
+	[special (id-hook QuotedIdentifierOpSymbol (convert)
+		  op-hook qidBaseSymbol (<Qids> : -> Qid)
+		  op-hook machineIntBaseSymbol (<MachineInts> : -> MachineInt))] .
+
+  op _<_ : Qid Qid -> Bool
+	[prec 37
+	 special (id-hook QuotedIdentifierOpSymbol (<)
+		  op-hook qidBaseSymbol (<Qids> : -> Qid)
+		  term-hook trueTerm (true)
+	          term-hook falseTerm (false))] .
+endfm
+
+fmod QID-LIST is
+  protecting QID .
+  sort QidList .
+  subsort Qid < QidList .
+  op nil : -> QidList .
+  op __ : QidList QidList -> QidList [assoc id: nil] .
+endfm
+
+fmod META-LEVEL is
+  protecting QID-LIST .
+  sorts FModule Module ModuleExpression Import ImportList
+	QidSet MachineIntList Sort SortDecl SubsortDecl SubsortDeclSet Attr
+	AttrSet OpDecl OpDeclSet VarDecl VarDeclSet Term TermList Equation
+	EquationSet Rule RuleSet MembAx MembAxSet Assignment Substitution
+	ResultPair Hook HookList .
+  subsort FModule < Module . 
+  subsort Import < ImportList .
+  subsort Qid < ModuleExpression .
+  subsort Qid < QidSet .
+  subsort MachineInt < MachineIntList .
+  subsort Qid < Sort .
+  subsort SubsortDecl < SubsortDeclSet .
+  subsort Attr < AttrSet .
+  subsort OpDecl < OpDeclSet .
+  subsort VarDecl < VarDeclSet .
+  subsort Qid < Term .
+  subsort Term < TermList .
+  subsort Equation < EquationSet .
+  subsort Rule < RuleSet .
+  subsort MembAx < MembAxSet .
+  subsort Assignment < Substitution .
+  subsort Hook < HookList .
+
+  op _[_] : Qid TermList -> Term .
+  op {_}_ : Qid Qid -> Term .
+  op _,_ : TermList TermList -> TermList [assoc gather (e E) prec 120] .
+  op _:_ : Term Qid -> Term .
+  op _::_ : Term Qid -> Term .
+  op none : -> QidSet .
+  op _;_ : QidSet QidSet -> QidSet [assoc comm id: none] .
+  op nil : -> MachineIntList .
+  op __ : MachineIntList MachineIntList -> MachineIntList [assoc id: nil] .
+
+  op fmod_is_______endfm : Qid ImportList SortDecl SubsortDeclSet
+	OpDeclSet VarDeclSet MembAxSet EquationSet -> FModule
+	[gather (& & & & & & & &)] .
+  op mod_is________endm : Qid ImportList SortDecl SubsortDeclSet
+	OpDeclSet VarDeclSet MembAxSet EquationSet RuleSet -> Module
+	[gather (& & & & & & & & &)] .
+  op [_] : Qid -> Module .
+  op nil : -> ImportList .
+  op __ : ImportList ImportList -> ImportList [assoc id: nil] .
+  op including_. : ModuleExpression -> Import .
+
+  op sorts_. : QidSet -> SortDecl .
+  op subsort_<_. : Qid Qid -> SubsortDecl .
+  op none : -> SubsortDeclSet .
+  op __ : SubsortDeclSet SubsortDeclSet -> SubsortDeclSet 
+	[assoc comm id: none] .
+
+  op (op_:_->_[_].) : Qid QidList Qid AttrSet -> OpDecl .
+  op none : -> OpDeclSet .
+  op __ : OpDeclSet OpDeclSet -> OpDeclSet [assoc comm id: none] .
+
+  op none : -> AttrSet .
+  op __ : AttrSet AttrSet -> AttrSet [assoc comm id: none] .
+  op assoc : -> Attr .
+  op comm : -> Attr .
+  op idem : -> Attr .
+  op id : Term -> Attr .
+  op left-id : Term -> Attr .
+  op right-id : Term -> Attr .
+  op strat : MachineIntList -> Attr .
+  op memo : -> Attr .
+  op prec : MachineInt -> Attr .
+  op gather : QidList -> Attr .
+  op ctor : -> Attr .
+
+  op special : HookList -> Attr .
+  op __ : HookList HookList -> HookList [assoc] .
+  op id-hook : Qid QidList -> Hook .
+  op op-hook : Qid Qid QidList Qid -> Hook .
+  op term-hook : Qid Term -> Hook .
+
+  op var_:_. : Qid Qid -> VarDecl .
+  op none : -> VarDeclSet .
+  op __ : VarDeclSet VarDeclSet -> VarDeclSet [assoc comm id: none] .
+
+  op mb_:_. : Term Qid -> MembAx .
+  op cmb_:_if_=_. : Term Qid Term Term -> MembAx .
+  op none : -> MembAxSet .
+  op __ : MembAxSet MembAxSet -> MembAxSet [assoc comm id: none] .
+
+  op eq_=_. : Term Term -> Equation .
+  op ceq_=_if_=_. : Term Term Term Term -> Equation .
+  op none : -> EquationSet .
+  op __ : EquationSet EquationSet -> EquationSet [assoc comm id: none] .
+
+  op rl[_]:_=>_. : Qid Term Term -> Rule .
+  op crl[_]:_=>_if_=_. : Qid Term Term Term Term -> Rule .
+  op none : -> RuleSet .
+  op __ : RuleSet RuleSet -> RuleSet [assoc comm id: none] .
+
+  op _<-_ : Qid Term -> Assignment .
+  op none : -> Substitution .
+  op _;_ : Substitution Substitution -> Substitution [assoc comm id: none] .
+  op {_,_} : Term Substitution -> ResultPair .
+
+  op error* : -> Term .
+  op errorSort : QidSet -> Sort .
+
+  op meta-reduce : Module Term -> Term 
+     [special (
+	id-hook MetaLevelOpSymbol	(meta-reduce)
+
+	op-hook machineIntBaseSymbol	(<MachineInts> : -> MachineInt)
+	op-hook qidBaseSymbol		(<Qids> : -> Qid)
+
+	op-hook nilMachineIntListSymbol	(nil : -> MachineIntList)
+	op-hook machineIntListSymbol	
+                (__ : MachineIntList MachineIntList -> MachineIntList)
+	op-hook emptyQidSetSymbol	(none : -> QidSet)
+	op-hook qidSetSymbol		(_;_ : QidSet QidSet -> QidSet)
+	op-hook nilQidListSymbol	(nil : -> QidList)
+	op-hook qidListSymbol		(__ : QidList QidList -> QidList)
+
+	op-hook fmodSymbol		
+		(fmod_is_______endfm : 
+			Qid ImportList SortDecl SubsortDeclSet OpDeclSet 
+			VarDeclSet MembAxSet EquationSet -> FModule)
+	op-hook modSymbol				
+		(mod_is________endm : 
+			Qid ImportList SortDecl SubsortDeclSet OpDeclSet 
+			VarDeclSet MembAxSet EquationSet RuleSet ->
+		Module)
+	op-hook existingModuleSymbol	([_] : Qid -> Module)
+	op-hook nilImportListSymbol	(nil : -> ImportList)
+	op-hook importListSymbol	(__ : ImportList ImportList -> ImportList)
+	op-hook includingSymbol		(including_. : ModuleExpression -> Import)
+
+	op-hook sortSymbol		(sorts_. : QidSet -> SortDecl)
+	op-hook emptySubsortDeclSetSymbol	(none : -> SubsortDeclSet)
+	op-hook subsortDeclSetSymbol	
+		(__ : SubsortDeclSet SubsortDeclSet -> SubsortDeclSet)
+	op-hook subsortSymbol		(subsort_<_. : Qid Qid -> SubsortDecl)
+
+	op-hook opDeclSetSymbol		(__ : OpDeclSet OpDeclSet -> OpDeclSet)
+	op-hook emptyOpDeclSetSymbol	(none : -> OpDeclSet)
+	op-hook opDeclSymbol		
+		(op_:_->_[_]. : Qid QidList Qid AttrSet -> OpDecl)
+
+	op-hook emptyAttrSetSymbol	(none : -> AttrSet)
+	op-hook attrSetSymbol		(__ : AttrSet AttrSet -> AttrSet)
+	op-hook assocSymbol		(assoc : -> Attr)
+	op-hook commSymbol		(comm : -> Attr)
+	op-hook idemSymbol		(idem : -> Attr)
+	op-hook idSymbol		(id : Term -> Attr)
+	op-hook leftIdSymbol		(left-id : Term -> Attr)
+	op-hook rightIdSymbol		(right-id : Term -> Attr)
+	op-hook stratSymbol		(strat : MachineIntList -> Attr)
+	op-hook memoSymbol		(memo : -> Attr)
+	op-hook precSymbol		(prec : MachineInt -> Attr)
+	op-hook gatherSymbol		(gather : QidList -> Attr)
+	op-hook ctorSymbol		(ctor : -> Attr)
+
+	op-hook specialSymbol		(special : HookList -> Attr)
+	op-hook hookListSymbol		(__ : HookList HookList -> HookList)
+	op-hook idHookSymbol		(id-hook : Qid QidList -> Hook)
+	op-hook opHookSymbol		(op-hook : Qid Qid QidList Qid -> Hook)
+	op-hook termHookSymbol		(term-hook : Qid Term -> Hook)
+
+	op-hook emptyVarDeclSetSymbol	(none : -> VarDeclSet)
+	op-hook varDeclSetSymbol	
+		(__ : VarDeclSet VarDeclSet -> VarDeclSet)
+	op-hook varDeclSymbol		(var_:_. : Qid Qid -> VarDecl)
+
+	op-hook metaTermSymbol		(_[_] : Qid TermList -> Term)
+	op-hook metaDisambigSymbol	({_}_ : Qid Qid -> Term)
+	op-hook metaArgSymbol		(_,_ : TermList TermList -> TermList)
+
+	op-hook emptyMembAxSetSymbol	(none : -> MembAxSet)
+	op-hook membAxSetSymbol		(__ : MembAxSet MembAxSet -> MembAxSet)
+	op-hook mbSymbol		(mb_:_. : Term Qid -> MembAx)
+	op-hook cmbSymbol		
+		(cmb_:_if_=_. : Term Qid Term Term -> MembAx)
+
+	op-hook emptyEquationSetSymbol	(none : -> EquationSet)
+	op-hook equationSetSymbol	
+		(__ : EquationSet EquationSet -> EquationSet)
+	op-hook eqSymbol		(eq_=_. : Term Term -> Equation)
+	op-hook ceqSymbol		
+		(ceq_=_if_=_. : Term Term Term Term -> Equation)
+
+	op-hook emptyRuleSetSymbol	(none : -> RuleSet)
+	op-hook ruleSetSymbol		(__ : RuleSet RuleSet -> RuleSet)
+	op-hook rlSymbol		(rl[_]:_=>_. : Qid Term Term -> Rule)
+	op-hook crlSymbol		
+		(crl[_]:_=>_if_=_. : Qid Term Term Term Term -> Rule)
+
+	op-hook membPredSymbol		(_:_ : Term Qid -> Term)
+	op-hook lazyMembPredSymbol	(_::_ : Term Qid -> Term)
+
+	op-hook substitutionSymbol	
+		(_;_ : Substitution Substitution -> Substitution)
+	op-hook emptySubstitutionSymbol	(none : -> Substitution)
+	op-hook assignmentSymbol	(_<-_ : Qid Term -> Assignment)
+	op-hook resultPairSymbol	
+		({_,_} : Term Substitution -> ResultPair)
+
+	op-hook metaErrorSymbol		(error* : -> Term)
+	op-hook errorSortSymbol		(errorSort : QidSet -> Sort)
+	term-hook trueTerm		(true)
+	term-hook falseTerm		(false))] .
+
+  op meta-rewrite : Module Term MachineInt -> Term 
+	[special (
+	   id-hook MetaLevelOpSymbol	(meta-rewrite)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op meta-apply : Module Term Qid Substitution MachineInt -> ResultPair 
+	[special (
+	   id-hook MetaLevelOpSymbol	(meta-apply)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op meta-parse : Module QidList -> Term 
+	[special (
+    	   id-hook MetaLevelOpSymbol	(meta-parse)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op meta-pretty-print : Module Term -> QidList
+	[special (
+    	   id-hook MetaLevelOpSymbol	(meta-pretty-print)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op sortLeq : Module Sort Sort -> Bool 
+	[special (
+	   id-hook MetaLevelOpSymbol	(sortLeq)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op sameComponent : Module Sort Sort -> Bool 
+	[special (
+	   id-hook MetaLevelOpSymbol	(sameComponent)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op leastSort : Module Term -> Sort 
+	[special (
+	   id-hook MetaLevelOpSymbol	(leastSort)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op lesserSorts : Module Sort -> QidSet 
+	[special (
+	   id-hook MetaLevelOpSymbol	(lesserSorts)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+
+  op glbSorts : Module Sort Qid -> QidSet 
+	[special (
+	   id-hook MetaLevelOpSymbol	(glbSorts)
+	   op-hook shareWith		(meta-reduce : Module Term -> Term))] .
+endfm
+
+mod LOOP-MODE is
+  protecting QID-LIST .
+  sorts State System .
+  op [_,_,_] : QidList State QidList -> System 
+	[special (
+	   id-hook LoopSymbol
+	   op-hook qidBaseSymbol	(<Qids> : -> Qid)
+  	   op-hook nilQidListSymbol	(nil : -> QidList)
+	   op-hook qidListSymbol	(__ : QidList QidList -> QidList))] .
+endm

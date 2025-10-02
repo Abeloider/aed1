@@ -1,0 +1,25 @@
+  mod PETRI-NET is
+    sorts Place Marking .
+    subsort Place < Marking .
+    op __ : Marking Marking -> Marking [assoc comm] .
+    ops $ q a c : -> Place .
+
+    rl [buy-c] : $ => c .
+    rl [buy-a] : $ => a  q .
+    rl [change] : q  q  q  q => $ .
+  endm
+
+  rew $ $ $ $ $ q q q q q .
+  *** result Marking: a a a c c c c
+
+  rew [1] $ $ $ $ $ q q q q q .
+  *** result Marking: $ $ $ $ $ $ q
+
+  rew [2] $ $ $ $ $ q q q q q .
+  *** result Marking: $ $ $ $ $ q q a
+
+  rew [3] $ $ $ $ $ q q q q q .
+  *** result Marking: $ $ $ $ q q a c
+
+  rew [4] $ $ $ $ $ q q q q q .
+  *** result Marking: $ $ $ q q a c c

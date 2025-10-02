@@ -1,0 +1,214 @@
+ fmod MINI-MAUDE is
+   including META-LEVEL .
+ 
+   op MINI-MAUDE-SYNTAX : -> FModule .
+
+   eq MINI-MAUDE-SYNTAX 
+     = (fmod 'MINI-MAUDE-SYNTAX is
+         including 'QID-LIST .
+         sorts 'Bubble ; 'Token ; 'NeTokenList ;
+               'PreModule ; 'PreCommand ;
+               'Decl ; 'DeclList .
+         subsort 'Decl < 'DeclList .
+
+         op 'token : 'Qid -> 'Token 
+                 [special(
+                     (id-hook('Bubble, '1 '1)
+                      op-hook('qidBaseSymbol, '<Qids>, nil, 'Qid)))] .
+         op 'neTokenList : 'QidList -> 'NeTokenList 
+                 [special(
+                     (id-hook('Bubble, '1 '-1)
+                      op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
+                      op-hook('qidBaseSymbol, '<Qids>, nil, 'Qid)
+                      id-hook('Exclude, '.)))] .
+         op 'bubble : 'QidList -> 'Bubble 
+                 [special(
+                     (id-hook('Bubble, '1 '-1)
+                      op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
+                      op-hook('qidBaseSymbol, '<Qids>, nil, 'Qid)))] .
+
+         *** sort declaration
+         op 'sort_. : 'Token -> 'Decl [none] .
+
+         *** operator declaration
+         op 'op_:`->_. : 'Token 'Token -> 'Decl [none] .
+         op 'op_:_->_. : 'Token 'NeTokenList 'Token -> 'Decl [none] .
+
+         *** variable declaration
+         op 'var_:_. : 'Token 'Token -> 'Decl [none] .
+
+         *** equation declaration
+         op 'eq_=_. : 'Bubble 'Bubble -> 'Decl [none] .
+
+         *** functional module
+         op 'fmod_is_endfm : 'Token 'DeclList -> 'PreModule [none] .
+         op '__ : 'DeclList 'DeclList -> 'DeclList [assoc gather('e 'E)] .
+
+         none
+         none
+         none
+      endfm) .
+
+   vars QIL QIL' : QidList .
+   vars QI QI' QI'' S F V L : Qid .
+   vars T T' T'' : Term .
+   vars TL TL' : TermList .
+   var IL : ImportList .
+   var SD : SortDecl .
+   var SSDS : SubsortDeclSet .
+   vars ODS ODS' : OpDeclSet .
+   vars VDS VDS' : VarDeclSet .
+   var MAS : MembAxSet .
+   vars EqS EqS' : EquationSet .
+   vars SS SS' : QidSet .
+   var SL : QidList .
+   vars M M' : Module? .
+   
+   op emptyFModule : Qid -> FModule .
+   eq emptyFModule(QI)
+     = fmod QI is nil (sorts none .) none none none none none endfm .
+   
+   sort Module? .
+   subsort Module < Module? .
+   
+   op processPreModuleTerm : Term -> Module? .
+   op extractSignature : Term -> Module? .
+   op extractSignatureAux : Term Module -> Module? .
+   op parseDeclSignature : Term Module -> Module? .
+   op solveBubbles : Term Module -> Module? .
+   op solveBubblesAux : Term Module Module -> Module? .
+   
+   eq processPreModuleTerm(T)
+     = solveBubbles(T, extractSignature(T)) .
+   
+   eq extractSignature('fmod_is_endfm['token[T], T'])
+     = extractSignatureAux(T', emptyFModule(downQid(T))) .
+   
+   eq extractSignatureAux('__[T, T'], M)
+     = extractSignatureAux(T', parseDeclSignature(T, M)) .
+   ceq extractSignatureAux(F[TL], M)
+     = parseDeclSignature(F[TL], M) 
+       if F =/= '__ .
+   
+   eq parseDeclSignature('sort_.['token[T]], M)
+     = addSortSet(downQid(T), M) .
+   
+   eq parseDeclSignature('op_:`->_.['token[T], 'token[T']], M)
+     = addOpDeclSet((op downQid(T) : nil -> downQid(T') [none] .), M) .
+   eq parseDeclSignature(
+         'op_:_->_.['token[T], 'neTokenList[T'], 'token[T'']], M)
+     = addOpDeclSet(
+          (op downQid(T) : downQidList(T') -> downQid(T'') [none] .), M) .
+   
+   eq parseDeclSignature('var_:_.['token[T], 'token[T']], M)
+     = addVarDeclSet((var downQid(T) : downQid(T') .), M) .
+   
+   eq parseDeclSignature('eq_=_.[T, T'], M)
+     = M .
+   
+   eq solveBubbles('fmod_is_endfm['token[T], T'], M)
+     = solveBubblesAux(T', emptyFModule(downQid(T)), M) .
+ 
+   eq solveBubblesAux('__[T, T'], M, M')
+     = solveBubblesAux(T', solveBubblesAux(T, M, M'), M') .
+   
+   eq solveBubblesAux('sort_.['token[T]], M, M')
+     = addSortSet(downQid(T), M) .
+   
+   eq solveBubblesAux('op_:`->_.['token[T], 'token[T']], M, M')
+     = addOpDeclSet((op downQid(T) : nil -> downQid(T') [none] .), M) .
+   eq solveBubblesAux(
+         'op_:_->_.['token[T], 'neTokenList[T'], 'token[T'']], M, M')
+     = addOpDeclSet(
+            (op downQid(T) : downQidList(T') -> downQid(T'') [none] .), M) .
+   
+   eq solveBubblesAux('var_:_.['token[T], 'token[T']], M, M')
+     = addVarDeclSet((var downQid(T) : downQid(T') .), M)  .
+   
+   eq solveBubblesAux('eq_=_.['bubble[T], 'bubble[T']], M, M')
+     = addEquationSet(
+          (eq meta-parse(M', downQidList(T)) 
+             = meta-parse(M', downQidList(T')) .),
+          M) .
+   
+   op addSortSet : QidSet FModule -> FModule .
+   op addOpDeclSet : OpDeclSet FModule -> FModule .
+   op addVarDeclSet : VarDeclSet FModule -> FModule .
+   op addEquationSet : EquationSet FModule -> FModule .
+   
+   eq addSortSet(SS, fmod QI is IL sorts SS' . SSDS ODS VDS MAS EqS endfm)
+     = fmod QI is IL sorts SS ; SS' . SSDS ODS VDS MAS EqS endfm .
+   eq addOpDeclSet(ODS, fmod QI is IL SD SSDS ODS' VDS MAS EqS endfm)
+     = fmod QI is IL SD SSDS ODS ODS' VDS MAS EqS endfm .
+   eq addVarDeclSet(VDS, fmod QI is IL SD SSDS ODS VDS' MAS EqS endfm)
+     = fmod QI is IL SD SSDS ODS VDS VDS' MAS EqS endfm .
+   eq addEquationSet(EqS, fmod QI is IL SD SSDS ODS VDS MAS EqS' endfm)
+     = fmod QI is IL SD SSDS ODS VDS MAS EqS EqS' endfm .
+   
+   
+   *** down
+   
+   op downQid : Term -> Qid .
+   op downQidList : TermList -> QidList .
+   
+   eq downQidList({QI}'Qid)
+     = downQid({QI}'Qid) .
+   eq downQidList('__[TL, TL'])
+     = downQidList(TL) downQidList(TL') .
+   eq downQidList((TL, TL'))
+     = downQidList(TL) downQidList(TL') .
+   eq downQidList({'nil}'QidList)
+     = (nil).QidList .
+   
+   eq downQid({QI}QI')
+     = strip(QI) .
+   
+ endfm
+
+  red meta-parse(MINI-MAUDE-SYNTAX, 
+                 'fmod 'NAT3 'is 
+                     'sort 'Nat3 '. 
+                     'op 's_ ': 'Nat3 '-> 'Nat3 '.
+                     'op '0 ': '-> 'Nat3 '.
+                     'eq 's 's 's '0 '= '0 '.
+                 'endfm) .
+
+***(
+  rewrites: 2 in 220ms cpu (215ms real) (9 rewrites/second)
+  result Term: 
+    'fmod_is_endfm[
+       'token[{''NAT3}'Qid], 
+       '__['sort_.['token[{''Nat3}'Qid]], 
+       '__['op_:_->_.['token[{''s_}'Qid], 
+                      'neTokenList[{''Nat3}'Qid], 
+                      'token[{''Nat3}'Qid]],
+       '__['op_:`->_.['token[{''0}'Qid],
+                      'token[{''Nat3}'Qid]],
+           'eq_=_.['bubble['__[{''s}'Qid, {''s}'Qid, {''s}'Qid, {''0}'Qid]],
+                   'bubble[{''0}'Qid]]]]]]
+)
+
+   red processPreModuleTerm(
+          meta-parse(MINI-MAUDE-SYNTAX, 
+                     'fmod 'NAT3 'is 
+                         'sort 'Nat3 '. 
+                         'op 's_ ': 'Nat3 '-> 'Nat3 '.
+                         'op '0 ': '-> 'Nat3 '.
+                         'eq 's 's 's '0 '= '0 '.
+                     'endfm)) .
+   
+***(
+  rewrites: 80 in 50ms cpu (48ms real) (1600 rewrites/second)
+  result FModule: 
+    fmod 'NAT3 is 
+       nil 
+       sorts 'Nat3 . 
+       none 
+       op '0 : nil -> 'Nat3[none]. 
+       op 's_ : 'Nat3 -> 'Nat3[none]. 
+       none 
+       none 
+       eq 's_['s_['s_[{'0}'Nat3]]] = {'0}'Nat3 . 
+    endfm
+)
+

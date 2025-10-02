@@ -1,0 +1,15 @@
+  mod DUPLICATE is
+    inc LOOP-MODE .
+    op null : -> State .
+    vars Input Output : QidList .
+    crl [duplicate] : 
+       [Input, null, Output] 
+       => [nil, null, Output Input Input] 
+          if Input =/= nil .
+  endm
+
+  loop [nil, null, nil] .
+
+  (a s d )
+
+  *** a s d a s d

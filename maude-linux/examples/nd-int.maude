@@ -1,0 +1,22 @@
+  mod ND-INT is
+    protecting MACHINE-INT .
+    sort NdInt .
+    subsort MachineInt < NdInt .
+    op _?_ : NdInt NdInt -> NdInt [assoc comm] .
+    var N : MachineInt .
+    var ND : NdInt .
+    eq N ? N = N .
+    rl [choice]: N ? ND => N .
+  endm
+
+  rew (1 ? 5 ? 2 ? 1 ? 5) + (3 ? 11 ? 7 ? 3 ? 11) .
+  *** result NzMachineInt: 4
+
+  rew (1 ? 5 ? 2 ? 1 ? 5) * (3 ? 11 ? 7 ? 3 ? 11) .
+  *** result NzMachineInt: 3
+
+  rew [1] (1 ? 5 ? 2 ? 1 ? 5) * (3 ? 11 ? 7 ? 3 ? 11) .
+  *** result Error(NdInt): 1 * (3 ? 7 ? 11)
+
+  rew [2] (1 ? 5 ? 2 ? 1 ? 5) * (3 ? 11 ? 7 ? 3 ? 11) .
+  *** result NzMachineInt: 3

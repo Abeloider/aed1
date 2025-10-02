@@ -1,0 +1,24 @@
+  fmod NUMBERS is
+    sorts Nat NzNat Nat3 .
+    subsort NzNat < Nat .
+
+    op zero : -> Nat .
+    op s_ : Nat -> NzNat .
+    op p_ : NzNat -> Nat .
+    op _+_ : Nat Nat -> Nat .
+    op _+_ : NzNat NzNat -> NzNat .
+    ops 0 1 2 : -> Nat3 .
+    op _+_ : Nat3 Nat3 -> Nat3 [comm] .
+
+    vars N M : Nat .
+    var N3 : Nat3 .
+
+    eq p s N = N .
+    eq s p N = N .
+    eq N + zero = N .
+    eq N + s M = s (N + M) .
+    eq (N3 + 0) = N3 .
+    eq 1 + 1 = 2 .
+    eq 1 + 2 = 0 .
+    eq 2 + 2 = 1 .
+  endfm

@@ -1,0 +1,51 @@
+  (fmod PATH is
+      protecting MACHINE-INT .
+
+      sorts Edge Path Path? Node .
+      subsorts Edge < Path < Path? .
+
+      ops n1 n2 n3 n4 n5 : -> Node .
+      ops a b c d e : -> Edge .
+      op _;_ : Path? Path? -> Path? [assoc] .
+      ops source target : Path -> Node .
+      op length : Path -> MachineInt .
+
+      var E : Edge .
+      var P : Path .
+
+      cmb E ; P : Path if target(E) == source(P) .
+
+      ceq source(E ; P) = source(E) if E ; P : Path .
+      ceq target(P ; E) = target(E) if P ; E : Path .
+      eq length(E) = 1 .
+      ceq length(E ; P) = 1 + length(P) if E ; P : Path .
+
+      eq source(a) = n1 .
+      eq target(a) = n2 .
+      eq source(b) = n1 .
+      eq target(b) = n3 .
+      eq source(c) = n3 .
+      eq target(c) = n4 .
+      eq source(d) = n4 .
+      eq target(d) = n2 .
+      eq source(e) = n2 .
+      eq target(e) = n5 .
+   endfm)
+
+  (red b ; c ; d .)
+  *** Result Path? : b ; c ; d
+
+  (red length(b ; c ; d) .)
+  *** Result NzMachineInt : 3
+
+  (red a ; b ; c .)
+  *** Result Path? : a ; b ; c
+
+  (red source(a ; b ; c) .)
+  *** Result errorSort(Node) : source(a ; b ; c)
+
+  (red target(a ; b ; c) .)
+  *** Result errorSort(Node) : target(a ; b ; c)
+
+  (red length(a ; b ; c) .)
+  *** Result errorSort(MachineInt) : length(a ; b ; c)

@@ -1,0 +1,85 @@
+
+	Maude System
+	Copyright 1998,1999 SRI International.
+
+
+It is important that you subscribe to the maude mailing list if using Maude,
+as this is the mechanism by which we will make important announcements about
+the system.
+
+
+Installing Maude
+
+The information below describes how to install Maude.
+
+The following discussion assumes a Linux configuration. Switch `linux' by
+`solaris' or `sunos' in what follows if you download a Solaris or SunOS
+version of the system. To install the system:
+
+      uncompress maude-linux.tar.Z | tar xvf -
+
+This generates the following directory structure:
+
+
+     maude-linux/
+
+          bin/
+
+               full-maude.maude
+               maude.linux
+               prelude.maude
+
+          examples/
+
+               *.maude
+
+You can start the Core Maude system by calling the maude.linux binary in the
+maude-linux/bin directory. Note that when you execute maude.linux the file
+prelude.maude is automatically loaded in the system. The system looks for it
+in the same directory where it is located. This is all you need to use Core
+Maude.
+
+Once you are in the Core Maude system, if you want to use Full Maude, you
+need to load the full-maude.maude file. You have to give the path of the
+full-maude.maude file to load it. Thus, if you are in the directory where
+the file full-maude.maude is located you just type:
+
+     Maude> in full-maude.maude
+
+Assuming that the  full-maude.maude file is in the maude-linux/bin directory
+and that you are, for example, in the directory maude-linux/examples, you
+type:
+
+     Maude> in ../bin/full-maude.maude
+
+If you want to avoid the inconvenience of typing the whole path everytime
+you have to download it, we recomend creating a soft link to it. The system
+does not assume anything about its location. However, we strongly recomend
+not to change its location to facilitate future actualizations. You can
+create a symbolic link to get the same effect.
+
+When loading full-maude.maude the Full Maude system is automatically 
+started. You can restart it at any moment by typing
+
+     Maude> loop init .
+
+You can then start entering modules or commands to Full Maude. At this point
+the system accepts inputs to Core Maude (in the usual way) and to Full Maude
+(enclosing them in parentheses).
+
+Another way of using Full Maude is to pass full-maude.maude as an argument
+when executing maude.linux,  by typing
+
+     maude.linux full-maude.maude
+
+when both files are in the same directory, or the full path name for each
+otherwise. Or you can define your own aliases. For example,
+
+     alias maude  "<path>/maude-linux/bin/maude.linux"
+
+     alias full-maude  "<path>/maude-linux/bin/maude.linux
+     <path>/maude-linux/bin/full-maude.maude"
+
+The directory maude-linux/bin/examples contains all the examples in the
+manual.
+

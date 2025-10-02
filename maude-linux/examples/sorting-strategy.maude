@@ -1,0 +1,276 @@
+  in strategy.maude
+
+  fmod SORTING-STRATEGY is
+    protecting STRATEGY .
+    
+    op insert : MachineInt -> Strategy .
+    ops X Y : -> MetaVar .
+
+    op SORTING : -> Module .
+
+    var N : MachineInt .
+
+    eq SORTING 
+      = (mod 'SORTING is
+         including 'MACHINE-INT .
+         sorts 'Pair ; 'PairSet .
+         subsort 'Pair < 'PairSet .
+         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair [none] .
+         op 'empty : nil -> 'PairSet [none] .
+         op '__ : 'PairSet 'PairSet -> 'PairSet 
+               [assoc comm id({'empty}'PairSet)] .
+         var 'I : 'MachineInt .
+         var 'J : 'MachineInt .
+         var 'X : 'MachineInt .
+         var 'Y : 'MachineInt .
+         none
+         none
+         crl ['sort]: '__['<_;_>['J, 'X], '<_;_>['I, 'Y]] 
+            => '__['<_;_>['J, 'Y], '<_;_>['I, 'X]]
+               if '_and_['_<_['J, 'I], '_>_['X, 'Y]] 
+                   = {'true}'Bool .
+    endm) .
+
+    eq insert(N) 
+       = and(set(Y, {'2}'MachineInt),
+         while('_<=_[Y, {index(', N)}'MachineInt],
+               and(set(X, Y),
+               and(while('_>_[X, {'1}'MachineInt],
+                         and(applyWithSubst('sort,
+                                (('I <- X); 
+                                ('J <- '_-_[X, {'1}'MachineInt]))),
+                         set(X, '_-_[X, {'1}'MachineInt]))),
+               set(Y, '_+_[Y, {'1}'MachineInt]))))) .
+  endfm
+
+  rew meta-rewrite(SORTING, 
+               '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                   '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                   '<_;_>[{'3}'MachineInt, {'1}'MachineInt]], 
+               0) .
+  *** result Term: '__['<_;_>[{'1}'NzMachineInt,{'1}'NzMachineInt],
+  ***                  '<_;_>[{'2}'NzMachineInt,{'2}'NzMachineInt],
+  ***                  '<_;_>[{'3}'NzMachineInt,{'3}'NzMachineInt]]
+
+  rew meta-rewrite(SORTING,
+               '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                   '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                   '<_;_>[{'3}'MachineInt, {'1}'MachineInt]], 
+               2) .
+  *** result Term: '__['<_;_>[{'1}'NzMachineInt,{'1}'NzMachineInt],
+  ***                  '<_;_>[{'2}'NzMachineInt,{'3}'NzMachineInt],
+  ***                  '<_;_>[{'3}'NzMachineInt,{'2}'NzMachineInt]]
+
+  rew rewInWith(SORTING,
+                '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                    '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                    '<_;_>[{'3}'MachineInt, {'1}'MachineInt]],
+                nilBindingList,
+                apply('sort)).
+  *** result StrategyExpression: 
+  ***    rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'NzMachineInt,{'2}'NzMachineInt],
+  ***           '<_;_>[{'2}'NzMachineInt,{'3}'NzMachineInt],
+  ***           '<_;_>[{'3}'NzMachineInt,{'1}'NzMachineInt]], 
+  ***       nilBindingList, 
+  ***       idle)
+
+  rew rewInWith(SORTING,
+              '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                  '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                  '<_;_>[{'3}'MachineInt, {'1}'MachineInt]],
+              nilBindingList,
+              set(I, {'1}'MachineInt)).
+  *** result StrategyExpression: 
+  *** rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'MachineInt,{'3}'MachineInt],
+  ***           '<_;_>[{'2}'MachineInt,{'2}'MachineInt],
+  ***           '<_;_>[{'3}'MachineInt,{'1}'MachineInt]], 
+  ***       bindingList(binding(I, {'1}'NzMachineInt), 
+  ***                   nilBindingList), 
+  ***       idle)
+
+  rew rewInWith(SORTING,
+              '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                  '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                  '<_;_>[{'3}'MachineInt, {'1}'MachineInt]],
+                nilBindingList,
+                and(set(I, {'3}'MachineInt), 
+                    applyWithSubst('sort, ('I <- I)))) .
+  *** result StrategyExpression: 
+  *** rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'NzMachineInt,{'1}'NzMachineInt],
+  ***           '<_;_>[{'2}'NzMachineInt,{'2}'NzMachineInt],
+  ***           '<_;_>[{'3}'NzMachineInt,{'3}'NzMachineInt]], 
+  ***       bindingList(binding(I, {'3}'NzMachineInt), 
+  ***                   nilBindingList), 
+  ***       idle)
+            
+  rew rewInWith(SORTING,
+              '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                  '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                  '<_;_>[{'3}'MachineInt, {'1}'MachineInt]],
+                bindingList(binding(J, {'2}'MachineInt), 
+                            nilBindingList),
+        orelse(applyWithSubst('sort, ('J <- {'4}'MachineInt)),
+               applyWithSubst('sort, ('J <- J)))).
+  *** result StrategyExpression: 
+  ***    rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'NzMachineInt,{'3}'NzMachineInt],
+  ***           '<_;_>[{'2}'NzMachineInt,{'1}'NzMachineInt],
+  ***           '<_;_>[{'3}'NzMachineInt,{'2}'NzMachineInt]], 
+  ***       bindingList(binding(J, {'2}'MachineInt), 
+  ***                   nilBindingList), 
+  ***       idle)
+  
+  rew rewInWith(SORTING,
+             '__['<_;_>[{'1}'MachineInt, {'3}'MachineInt], 
+                 '<_;_>[{'2}'MachineInt, {'2}'MachineInt], 
+                 '<_;_>[{'3}'MachineInt, {'1}'MachineInt]],
+                nilBindingList,
+                iterate(apply('sort))).
+  *** result StrategyExpression: 
+  ***    rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'NzMachineInt,{'1}'NzMachineInt],
+  ***           '<_;_>[{'2}'NzMachineInt,{'2}'NzMachineInt],
+  ***           '<_;_>[{'3}'NzMachineInt,{'3}'NzMachineInt]], 
+  ***       nilBindingList, idle)
+
+  rew rewInWith(SORTING,
+                '__['<_;_>[{'1}'MachineInt, {'10}'MachineInt], 
+                    '<_;_>[{'2}'MachineInt, {'9}'MachineInt], 
+                    '<_;_>[{'3}'MachineInt, {'8}'MachineInt], 
+                    '<_;_>[{'4}'MachineInt, {'7}'MachineInt], 
+                    '<_;_>[{'5}'MachineInt, {'6}'MachineInt], 
+                    '<_;_>[{'6}'MachineInt, {'5}'MachineInt], 
+                    '<_;_>[{'7}'MachineInt, {'4}'MachineInt], 
+                    '<_;_>[{'8}'MachineInt, {'3}'MachineInt], 
+                    '<_;_>[{'9}'MachineInt, {'2}'MachineInt], 
+                    '<_;_>[{'10}'MachineInt, {'1}'MachineInt]],
+                 nilBindingList,
+                 insert(10)) .
+  *** result StrategyExpression: 
+  ***    rewInWith(
+  ***       mod 'SORTING is 
+  ***         including 'MACHINE-INT . 
+  ***         sorts 'Pair ; 'PairSet . 
+  ***         subsort 'Pair < 'PairSet . 
+  ***         op '__ : 'PairSet 'PairSet -> 'PairSet
+  ***               [assoc comm id({'empty}'PairSet)]. 
+  ***         op '<_;_> : 'MachineInt 'MachineInt -> 'Pair[none]. 
+  ***         op 'empty : nil -> 'PairSet[none]. 
+  ***         var 'I : 'MachineInt . 
+  ***         var 'J : 'MachineInt . 
+  ***         var 'X : 'MachineInt . 
+  ***         var 'Y : 'MachineInt . 
+  ***         none 
+  ***         none 
+  ***         crl ['sort] : '__['<_;_>['J,'X],'<_;_>['I,'Y]] 
+  ***            => '__['<_;_>['J,'Y],'<_;_>['I,'X]]  
+  ***               if '_and_['_<_['J,'I],'_>_['X,'Y]] = {'true}'Bool . 
+  ***       endm, 
+  ***       '__['<_;_>[{'1}'NzMachineInt,{'1}'NzMachineInt],
+  ***           '<_;_>[{'2}'NzMachineInt,{'2}'NzMachineInt],
+  ***           '<_;_>[{'3}'NzMachineInt,{'3}'NzMachineInt],
+  ***           '<_;_>[{'4}'NzMachineInt,{'4}'NzMachineInt],
+  ***           '<_;_>[{'5}'NzMachineInt,{'5}'NzMachineInt],
+  ***           '<_;_>[{'6}'NzMachineInt,{'6}'NzMachineInt],
+  ***           '<_;_>[{'7}'NzMachineInt,{'7}'NzMachineInt],
+  ***           '<_;_>[{'8}'NzMachineInt,{'8}'NzMachineInt],
+  ***           '<_;_>[{'9}'NzMachineInt,{'9}'NzMachineInt],
+  ***           '<_;_>[{'10}'NzMachineInt,{'10}'NzMachineInt]], 
+  ***       bindingList(binding(Y, {'11}'NzMachineInt), 
+  ***       bindingList(binding(X, {'1}'NzMachineInt), 
+  ***                   nilBindingList)), 
+  ***       idle)
+

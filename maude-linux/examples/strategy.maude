@@ -1,0 +1,133 @@
+fmod STRATEGY is
+  protecting META-LEVEL .
+  sorts MetaVar Binding BindingList 
+        Strategy StrategyExpression .
+  subsort MetaVar < Term .
+
+  ops I J : -> MetaVar .
+  op binding : MetaVar Term -> Binding .
+  op nilBindingList : -> BindingList .
+  op bindingList : Binding BindingList -> BindingList .
+
+  op rewInWith : Module Term BindingList Strategy 
+                 -> StrategyExpression .
+  op set : MetaVar Term -> Strategy .
+  op rewInWithAux : StrategyExpression Strategy 
+                    -> StrategyExpression .
+  op idle : -> Strategy .
+  op failure : -> StrategyExpression .
+  op and : Strategy Strategy -> Strategy .
+  op apply : Qid -> Strategy .
+  op applyWithSubst : Qid Substitution -> Strategy .
+  op iterate : Strategy -> Strategy .
+  op while : Term Strategy -> Strategy .
+  op orelse : Strategy Strategy -> Strategy .
+
+  op extTerm : ResultPair -> Term .
+  op extSubst : ResultPair -> Substitution .
+  op update : BindingList Binding -> BindingList .
+  op applyBindingListSubst : Module Substitution 
+                             BindingList -> Substitution .
+  op substituteMetaVars : TermList BindingList -> TermList .
+
+  var M : Module .
+  vars V V' F G L S : Qid .
+  vars T T' : Term .
+  var TL : TermList .
+  var SB : Substitution .
+  vars B B' : Binding .
+  vars BL BL' : BindingList .
+  var MV MV' : MetaVar .
+  vars ST ST' : Strategy .
+
+  eq extSubst({T, SB}) = SB .
+  eq extTerm({T, SB}) = T .
+
+  eq rewInWith(M, T, BL, apply(L)) 
+    = if meta-apply(M, T, L, none, 0) 
+            == {error*, none}
+      then failure
+      else rewInWith(M, 
+              extTerm(meta-apply(M, T, L, none, 0)),
+              BL, idle) 
+      fi .
+
+  eq rewInWith(M, T, BL, set(MV, T')) 
+    = rewInWith(M, T,
+         update(BL,
+            binding(MV, meta-reduce(M, 
+                           substituteMetaVars(T', BL)))), 
+         idle) .
+
+  eq substituteMetaVars(T, nilBindingList) 
+    = T .
+  eq substituteMetaVars(MV, bindingList(binding(MV', T'), BL)) 
+    = if MV == MV' then T' 
+      else substituteMetaVars(MV, BL) fi .
+  eq substituteMetaVars(F, BL) 
+    = F .
+  eq substituteMetaVars({F}S, BL) = {F}S .
+  eq substituteMetaVars(F[TL], BL) 
+    = F[substituteMetaVars(TL, BL)] .
+  eq substituteMetaVars((T, TL), BL) 
+    = (substituteMetaVars(T, BL), substituteMetaVars(TL, BL)).
+
+  eq update(bindingList(binding(MV, T), BL), binding(MV', T')) 
+    = if MV == MV'
+      then bindingList(binding(MV, T'), BL)
+      else bindingList(binding(MV, T), 
+                       update(BL, binding(MV', T'))) 
+      fi .
+  eq update(nilBindingList, B) 
+    = bindingList(B, nilBindingList) .
+
+  eq rewInWith(M, T, BL, applyWithSubst(L, SB)) 
+    = if meta-apply(M, T, L, 
+                    applyBindingListSubst(M, SB, BL), 0) 
+            == {error*, none}
+      then failure
+      else rewInWith(M, extTerm(meta-apply(M, T, L,
+                    applyBindingListSubst(M, SB, BL), 0)),
+                     BL, idle) 
+      fi .
+
+  eq applyBindingListSubst(M, none, BL) 
+    = none .
+  eq applyBindingListSubst(M, ((V <- T); SB), BL) 
+    = ((V <- meta-reduce(M, substituteMetaVars(T, BL)));
+       applyBindingListSubst(M, SB, BL)) .
+
+  eq rewInWith(M, T, BL, and(ST, ST')) 
+    = if rewInWith(M, T, BL, ST) == failure
+      then failure
+      else rewInWithAux(rewInWith(M, T, BL, ST), ST') 
+      fi .
+
+  eq rewInWith(M, T, BL, orelse(ST, ST')) 
+    = if rewInWith(M, T, BL, ST) == failure
+      then rewInWith(M, T, BL, ST')
+      else rewInWith(M, T, BL, ST) 
+      fi .
+
+  eq rewInWith(M, T, BL, iterate(ST)) 
+    = if rewInWith(M, T, BL, ST) == failure
+      then rewInWith(M, T, BL, idle)
+      else rewInWithAux(rewInWith(M, T, BL, ST), iterate(ST)) 
+      fi .
+
+  eq rewInWithAux(rewInWith(M, T, BL, idle), ST) 
+    = rewInWith(M, T, BL, ST) .
+
+  eq rewInWith(M, T, BL, while(T', ST))
+    = if meta-reduce(M, substituteMetaVars(T', BL)) 
+         == {'true}'Bool
+      then (if rewInWith(M, T, BL, ST) == failure
+            then rewInWith(M, T, BL, idle)
+            else rewInWithAux(rewInWith(M, T, BL, ST), 
+                              while(T', ST)) 
+            fi)
+      else rewInWith(M, T, BL, idle) 
+      fi .
+
+endfm
+

@@ -1,0 +1,53 @@
+  mod DUPLICATE-TEN is
+    inc LOOP-MODE .
+    pr MACHINE-INT .
+    op <_;_> : QidList MachineInt -> State .
+    op init : -> System .
+    vars Input StoredInput Output : QidList .
+    vars QI QI0 QI1 QI2 QI3 QI4 QI5 QI6 QI7 QI8 QI9 : Qid .
+    var Counter : MachineInt .
+    rl [init] :
+       init => [nil, <  nil ; 0 >, nil] .
+    rl [in] : 
+       [QI Input, < StoredInput ; Counter >, Output] 
+       => [Input, < StoredInput QI ; Counter + 1 >, Output] .
+    rl [out] :
+       [Input, 
+        < QI0 QI1 QI2 QI3 QI4 QI5 QI6 QI7 QI8 QI9 StoredInput ; Counter >, 
+        Output] 
+       => [Input, 
+           < StoredInput ; Counter - 10  >, 
+           Output QI0 QI1 QI2 QI3 QI4 QI5 QI6 QI7 QI8 QI9] .
+  endm
+
+  loop init .
+
+  cont .
+  
+  *** result System: [nil,< nil ; 0 >,nil]
+
+  (a b)
+
+  cont .
+  
+  *** result System: [nil,< 'a 'b ; 2 >,nil]
+
+  (c d e f g h i)
+
+  cont .
+  
+  *** result System: [nil,< 'a 'b 'c 'd 'e 'f 'g 'h 'i ; 9 >,nil]
+
+  (j k l)
+
+  *** a b c d e f g h i j
+
+  cont .
+  
+  *** result System: [nil,< 'k 'l ; 2 >,'a 'b 'c 'd 'e 'f 'g 'h 'i 'j]
+
+  (m n)
+
+  cont .
+  
+  *** result System: [nil,< 'm 'n ; 2 >,nil]

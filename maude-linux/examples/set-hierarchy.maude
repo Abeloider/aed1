@@ -1,0 +1,69 @@
+  fmod SET-HIERARCHY is
+    protecting MACHINE-INT .
+
+    sorts Set Elt Magma .
+    subsorts Set < Elt < Magma .
+    subsorts MachineInt < Elt .
+
+    op mt : -> Set .                            *** empty set
+    op _,_ : Magma Magma -> Magma [assoc comm] .
+    op {_} : Magma -> Set .                     *** set constructor
+    ops _U_ _I_ : Set Set -> Set [assoc comm] . *** union, intersection
+    op _\_ : Set Set -> Set .                   *** difference
+    op _in_ : Elt Set -> Bool .
+    op P : Set -> Set .                         *** power set
+    op augment : Set Set -> Set .
+    op |_| : Set -> MachineInt .                *** cardinality
+  
+    vars L M : Magma .
+    vars E F : Elt .
+    vars S T : Set .
+  
+  *** equations between constructors to eliminate duplicate elements
+    eq { L , L , M } = { L , M } .
+    eq { L , L } = { L } .
+  
+  *** set union
+    eq S U mt = S .
+    eq { L } U { M } = { L , M } .
+  
+  *** set membership
+    eq E in mt = false .
+    eq E in { F } = (E == F) .
+    eq E in { F , L } 
+      = if E == F then true else E in { L } fi .
+  
+  *** set intersection
+    eq mt I S = mt .
+    eq { E } I S = if E in S then { E } else mt fi .
+    eq { E , L } I S =  ({ E } I S) U ({ L } I S) .
+  
+  *** set difference
+    eq mt \ S = mt .
+    eq { E } \ S = if E in S then mt else { E } fi .
+    eq { E , L } \ S = ({ E } \ S) U ({ L } \ S) .
+  
+  *** power set (defined using auxiliary function "augment")
+    eq P(mt) = { mt } .
+    eq P({ E }) = { mt , { E } } .
+    eq P({ E , L }) = P({ L }) U augment(P({ L }), { E }) .
+    eq augment(mt, T) = mt .
+    eq augment({ S }, T) = { S U T } .
+    eq augment({ S , L }, T) = { S U T } U augment({ L }, T) .
+  
+  *** cardinality 
+    eq | mt | = 0 .
+    eq | { E } | = 1 .
+    eq | { E , L } | 
+      = | { L } | + if E in { L } then 0 else 1 fi .
+  
+  endfm
+
+  red P({ 1 , 2 , 3 }) \ P({ 1 , 2 }) .
+  *** result Set: {{3}, {1, 3}, {2, 3}, {1, 2, 3}}
+  
+  red | P(P({ 1 , 2 , 3 })) | .
+  *** result NzMachineInt: 256
+  
+  red | (P(P({1 , 2 , 3 })) \ P(P({ 1 , 2 }))) | .
+  *** result NzMachineInt: 240

@@ -1,0 +1,19 @@
+  mod SORTING is
+    protecting MACHINE-INT .
+
+    sorts Pair PairSet .
+    subsort Pair < PairSet .
+
+    op <_;_> : MachineInt MachineInt -> Pair .
+    op empty : -> PairSet .
+    op __ : PairSet PairSet -> PairSet [assoc comm id: empty] .
+
+    vars I J X Y : MachineInt .
+
+    crl [sort] : < J ; X > < I ; Y > => < J ; Y > < I ; X >
+          if (J < I) and (X > Y) .
+  endm
+
+  rew < 1 ; 3 > < 2 ; 2 > < 3 ; 1 > .
+  *** result PairSet: < 1 ; 1 > < 2 ; 2 > < 3 ; 3 >
+

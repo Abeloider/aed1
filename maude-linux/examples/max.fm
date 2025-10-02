@@ -1,0 +1,80 @@
+  (fth TRIV is 
+    sort Elt .
+   endfth)
+  
+  (fth POSET is
+      protecting BOOL .
+      sort Elt .
+      op _<_ : Elt Elt -> Bool .
+      vars E1 E2 E3 : Elt .
+      eq E1 < E1 = false .
+      ceq E1 < E3 = true if E1 < E2 and E2 < E3 .
+   endfth)
+  
+  (fth TOSET is 
+    including POSET .
+    vars X Y : Elt .
+    ceq X < Y or Y < X = true if X =/= Y .
+   endfth)
+  
+  (fmod SET[X :: TRIV] is 
+    sorts Set[X] NeSet[X] . 
+    subsorts Elt.X < NeSet[X] < Set[X] .
+    op mt : -> Set[X] .
+    op __ : Set[X] Set[X] -> Set[X] [assoc comm id: mt] .
+    op __ : NeSet[X] NeSet[X] -> NeSet[X] [assoc comm id: mt] .
+    var E : Elt.X .
+    eq E E = E .
+   endfm)
+  
+  (view Toset from TRIV to TOSET is
+    sort Elt to Elt .
+   endv)
+  
+  (fmod MAX[T :: TOSET] is 
+    protecting SET[Toset][T] .
+    protecting BOOL .
+    op max : NeSet[Toset][T] -> Elt.T .
+    var E : Elt.T . 
+    var S : NeSet[Toset][T] .
+    eq max(E) = E .
+    ceq max(E S) = E if max(S) < E .
+    ceq max(E S) = max(S) if not (max(S) < E) .
+   endfm)
+  
+  (view MachineInt from TOSET to MACHINE-INT is
+    sort Elt to MachineInt .
+   endv)
+  
+  (fmod FOO is
+    pr MAX[MachineInt] .
+   endfm)
+  
+  (red max(5 4 8 4 6 5) .)
+  
+  *** Result NzMachineInt : 8
+
+  (red-in MAX[MachineInt] : max(5 4 8 4 6 5) .)
+  
+  *** Reduce in MAX [ MachineInt ] : max ( 5 4 8 4 6 5 ) . 
+  *** Result NzMachineInt : 8
+  
+  (red-in MAX[MachineInt] 
+               * (op max : NeSet[Toset][MachineInt] -> MachineInt to maximum_) 
+          : maximum 5 4 8 4 6 5 .)
+  
+  *** Reduce in MAX [ MachineInt ] 
+  ***   * ( op max : NeSet [ Toset ] [ MachineInt ] -> MachineInt to maximum_ )
+  ***  : maximum 5 4 8 4 6 5 . 
+  *** Result NeSet`[Toset`]`[MachineInt`] : 4 5 6 8
+  
+  (red-in MAX[MachineInt] 
+                * (op max : NeSet[Toset][MachineInt] -> MachineInt to maximum_ 
+                       [prec 41]) 
+          : maximum 5 4 8 4 6 5 .)
+  
+  *** Reduce in MAX [ MachineInt ] 
+  ***    * ( op max : NeSet [ Toset ] [ MachineInt ] -> MachineInt to maximum_ 
+  ***           [ prec 41 ] ) 
+  ***  : maximum 5 4 8 4 6 5 . 
+  *** Result NzMachineInt : 8

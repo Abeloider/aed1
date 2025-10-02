@@ -1,0 +1,76 @@
+  (fmod NAT is
+    sort Nat .
+    op 0 : -> Nat .
+    op s_ : Nat -> Nat .
+    op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
+    var N M : Nat .
+    eq s N + s M = s s (N + M) .
+   endfm)
+
+  (fmod META-NAT is
+    protecting META-LEVEL[NAT] .
+  
+    op getOpDeclSet : FModule -> OpDeclSet .
+  
+    var QI : Qid .
+    var IL : ImportList .
+    var SD : SortDecl .
+    var SSDS : SubsortDeclSet .
+    var ODS : OpDeclSet .
+    var VDS : VarDeclSet .
+    var MAS : MembAxSet .
+    var EqS : EquationSet .
+  
+    eq getOpDeclSet(fmod QI is IL SD SSDS ODS VDS MAS EqS endfm)
+      = ODS .
+   endfm)
+
+  (red getOpDeclSet(NAT) .)
+  *** Result OpDeclSet : 
+  ***    op '0 : nil -> 'Nat [none] . 
+  ***    op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm id({'0}'Nat)] . 
+  ***    op 's_ : 'Nat -> 'Nat [none] .
+
+  (red meta-reduce(NAT, '_+_[{'0}'Nat, 's_[{'0}'Nat]]) .)
+  *** Result Term : 's_[{'0}'Nat]
+
+  (red up(NAT, s 0) .)
+  *** Result Term : 's_[{'0}'Nat]
+
+  (red meta-reduce(NAT, up(NAT, 0 + s 0)) .)
+  *** Result Term : 's_[{'0}'Nat]
+
+  (red up(NAT) .)
+  *** Result FModule : 
+  ***     fmod 'NAT is 
+  ***        nil 
+  ***        sorts 'Nat . 
+  ***        none 
+  ***        op '0 : nil -> 'Nat [none] . 
+  ***        op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm id({'0}'Nat)] . 
+  ***        op 's_ : 'Nat -> 'Nat [none] . 
+  ***        var 'M : 'Nat . 
+  ***        var 'N : 'Nat . 
+  ***        none
+  ***        eq '_+_['s_['N], 's_['M]] = 's_['s_['_+_['N, 'M]]]. 
+  ***     endfm
+
+  (red meta-reduce(up(NAT), up(NAT, s s 0 + s s s 0)) .)
+  *** Result Term : 's_['s_['s_['s_['s_[{'0}'Nat]]]]]
+
+  (down NAT : 
+      red-in META-NAT : 
+         meta-reduce(NAT, up(NAT, 0 + s 0)) .)
+  *** Result Nat : s 0
+
+  (fmod META-META-NAT is
+     protecting META-LEVEL[META-NAT] .
+   endfm)
+
+  (down NAT :
+      down META-NAT : 
+          red meta-reduce(META-NAT, 
+                  up(META-NAT, 
+                     meta-reduce(NAT, 
+                         up(NAT, 0 + s 0)))) .)
+  *** Result Nat : s 0

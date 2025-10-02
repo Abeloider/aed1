@@ -1,0 +1,178 @@
+  fmod META-INTERPRETER is
+    protecting STRATEGY .
+    sorts Position .
+    subsorts MachineInt < Position .
+
+    op emptyPos : -> Position .
+    op pos : Position Position -> Position [assoc] .
+    op nullPos : -> Position .
+    op getSubterm : Term Position -> Term .
+    op getSubtermAux : TermList Position -> Term .
+    op replace : Term Term Position -> Term .
+    op replaceAux : TermList Term Position -> Term .
+    op nextPosition : Term Position -> Position .
+    op nextPositionUp : Term Position -> Position .
+
+    var P : Position .
+    var N : MachineInt .
+    var F G X Y L S : Qid .
+    var T T' T1 T1' : Term .
+    var TL TL' : TermList .
+
+    eq pos(emptyPos, P) = P .
+
+    eq getSubterm(F, N) = error* .
+    eq getSubterm({F}S, N) = error* .
+    eq getSubterm(F[TL], N) = getSubtermAux(TL, N) .
+
+    eq getSubterm(F, pos(N, P)) = error* .
+    eq getSubterm({F}S, pos(N, P)) = error* .
+    eq getSubterm(F[TL], pos(N, P))
+      = getSubterm(getSubtermAux(TL, N), P) .
+
+    eq getSubtermAux((T, TL), N) 
+      = if N == 1 then T else getSubtermAux(TL, _-_(N, 1)) fi .
+    eq getSubtermAux(T, N)
+      = if N == 1 then T else error* fi .
+
+    eq nextPosition(T, P) 
+      = if getSubterm(T, pos(P, 1)) == error*
+        then nextPositionUp(T, P)
+        else pos(P, 1) 
+        fi .
+
+    eq nextPositionUp(T, emptyPos) = nullPos .
+
+    eq nextPositionUp(T, N)  
+      = if getSubterm(T, (N + 1)) == error*
+        then nullPos
+        else (N + 1) 
+        fi .
+
+    eq nextPositionUp(T, pos(P, N)) 
+      = if getSubterm(T, pos(P, (N + 1))) == error*
+        then nextPositionUp(T, P)
+        else pos(P, (N + 1))  
+        fi .
+
+    eq replace(T, T', emptyPos) = T' .
+
+    eq replace(F, T', N) = error* .
+    eq replace({F}S, T', N) = error* .
+    eq replace(F[TL], T', N) = F[replaceAux(TL, T', N)] .
+
+    eq replace(F, T', pos(N, P)) = error* .   
+    eq replace({F}S, T', pos(N, P)) = error* .   
+    eq replace(F[TL], T', pos(N, P)) 
+      = F[replaceAux(TL, T', pos(N, P))] .   
+
+    eq replaceAux((T, TL), T', N) 
+      = if N == 1 
+        then (T', TL) 
+        else (T, replaceAux(TL, T', _-_(N, 1))) 
+        fi .
+    eq replaceAux(T, T', N) 
+      = if N == 1 then T' else error* fi .
+    
+    eq replaceAux((T, TL), T', pos(N, P)) 
+      = if N == 1 
+        then (replace(T, T', P), TL)
+        else (T, replaceAux(TL, T', pos(_-_(N, 1), P))) 
+        fi .
+    eq replaceAux(T, T', pos(N, P)) 
+      = if N == 1 
+        then replace(T, T', P)
+        else error* 
+        fi .
+
+    op metaInterpreter : -> Strategy .
+    op applyInPRedex : Position -> Strategy .
+
+    var M : Module .
+
+    eq rewInWith(M, T, nilBindingList, metaInterpreter) 
+      = rewInWith(M, T, nilBindingList, 
+           orelse(and(applyInPRedex(emptyPos),
+                      metaInterpreter),
+                  idle)) .
+
+    eq rewInWith(M, T, nilBindingList, applyInPRedex(P)) 
+      = if P =/= nullPos
+        then (if meta-apply(M, getSubterm(T, P), 'any, none, 0) 
+                    == {error*, none}
+              then rewInWith(M, T, nilBindingList,
+                      applyInPRedex(nextPosition(T, P)))
+              else rewInWith(M,
+                      replace(T, 
+                         extTerm(
+                            meta-apply(M, getSubterm(T, P), 
+                               'any, none, 0)), 
+                         P), 
+                      nilBindingList, idle) 
+              fi)
+        else failure 
+        fi .
+
+  op NAT-TREE : -> Module .
+  eq NAT-TREE 
+    = (mod 'NAT-TREE is
+         including 'BOOL .
+         sorts ('Nat ; 'Tree) .
+         subsort 'Nat < 'Tree .
+         op '0 : nil -> 'Nat [none] .
+         op 's_ : 'Nat -> 'Nat [none] .
+         op '_+_ : ('Nat 'Nat) -> 'Nat [none] .
+         op '_^_ : ('Tree 'Tree) -> 'Tree [none] .
+         op 'rev : 'Tree -> 'Tree [none] .
+         var 'N : 'Nat .
+         var 'M : 'Nat .
+         var 'T : 'Tree .
+         var 'T' : 'Tree .
+         none
+         none
+         rl ['any]: '_+_['N, {'0}'Nat] => 'N .
+         rl ['any]: '_+_[{'0}'Nat, 'N] => 'N .
+         rl ['any]: '_+_['s_['N], 's_['M]] 
+           => 's_['s_['_+_['N, 'M]]] .
+         rl ['any]: 'rev['N] => 'N .
+         rl ['any]: 'rev['_^_['T, 'T']] 
+           => '_^_['rev['T'], 'rev['T]] .
+       endm) . 
+
+  endfm
+
+  rew rewInWith(NAT-TREE, 
+              'rev['_^_['_^_['_+_['s_[{'0}'Nat], 's_['s_[{'0}'Nat]]],
+                             's_[{'0}'Nat]],
+                        '_^_[{'0}'Nat,
+                             '_+_['s_[{'0}'Nat], 's_[{'0}'Nat]]]]],     
+                   nilBindingList,
+                   metaInterpreter) .
+  *** result StrategyExpression: 
+  ***   rewInWith(mod 'NAT-TREE is 
+  ***                including 'BOOL . 
+  ***                sorts 'Nat ; 'Tree . 
+  ***                subsort 'Nat < 'Tree . 
+  ***                op '0 : nil -> 'Nat[none]. 
+  ***                op '_+_ : 'Nat 'Nat -> 'Nat[none]. 
+  ***                op '_^_ : 'Tree 'Tree -> 'Tree[none]. 
+  ***                op 's_ : 'Nat -> 'Nat[none]. 
+  ***                op 'rev : 'Tree -> 'Tree[none]. 
+  ***                var 'M : 'Nat . var 'T : 'Tree . 
+  ***                var 'T' : 'Tree . var 'N : 'Nat . 
+  ***                none 
+  ***                none 
+  ***                rl['any]: '_+_['N,{'0}'Nat] => 'N . 
+  ***                rl['any]: '_+_['s_['N],'s_['M]] 
+  ***                   => 's_['s_['_+_['N,'M]]] . 
+  ***                rl['any]: '_+_[{'0}'Nat,'N] => 'N . 
+  ***                rl['any]: 'rev['N] => 'N . 
+  ***                rl['any]: 'rev['_^_['T,'T']] 
+  ***                   => '_^_['rev['T'],'rev['T]] . 
+  ***             endm, 
+  ***             'rev['_^_['_^_['s_['s_['s_[{'0}'Nat]]], 
+  ***                            's_[{'0}'Nat]],
+  ***                       '_^_[{'0}'Nat,
+  ***                            's_['s_[{'0}'Nat]]]]], 
+  ***             nilBindingList, 
+  ***             idle)

@@ -1,0 +1,269 @@
+  (omod ACCNT is 
+    protecting MACHINE-INT .  
+    protecting QID .
+    subsort Qid < Oid .
+    class Accnt | bal : MachineInt .  
+    msgs credit debit : Oid MachineInt -> Msg .  
+    msg transfer_from_to_ : MachineInt Oid Oid -> Msg .  
+    vars A B : Oid . 
+    vars M N N' : MachineInt .  
+    rl [credit] : credit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N + M) > .  
+    crl [debit] : debit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N - M) >
+          if N > M .  
+    crl [transfer] : (transfer M from A to B)
+       < A : Accnt | bal : N > < B : Accnt | bal : N' > 
+       => < A : Accnt | bal : (N - M) > < B : Accnt | bal : (N' + M) >
+          if N > M . 
+   endom)
+  
+  (show all ACCNT .)
+  
+  ***(
+mod ACCNT is 
+        including QID . 
+        including MACHINE-INT . 
+        sorts AttributeSet Cid Attribute Object Oid Configuration Msg Accnt . 
+        subsort Qid < Oid . 
+        subsort Attribute < AttributeSet . 
+        subsort Object < Configuration . 
+        subsort Msg < Configuration . 
+        subsort Accnt < Cid . 
+        op __ : Configuration Configuration -> Configuration [ assoc comm id: empty ] . 
+        op _`,_ : AttributeSet AttributeSet -> AttributeSet [ assoc comm id: none ] . 
+        op none : -> AttributeSet . 
+        op empty : -> Configuration . 
+        op <_:_|_> : Oid Cid AttributeSet -> Object . 
+        op <_:_|`> : Oid Cid -> Object . 
+        op Accnt : -> Accnt . 
+        op credit : Oid MachineInt -> Msg . 
+        op debit : Oid MachineInt -> Msg . 
+        op transfer_from_to_ : MachineInt Oid Oid -> Msg . 
+        op bal`:_ : MachineInt -> Attribute . 
+        var A : Oid . 
+        var B : Oid . 
+        var M : MachineInt . 
+        var N : MachineInt . 
+        var N' : MachineInt . 
+        var V@Accnt : Accnt . 
+        var ATTS@0 : AttributeSet . 
+        var V@Accnt1 : Accnt . 
+        var ATTS@2 : AttributeSet . 
+        rl [ credit ] : credit ( A , M ) < A : V@Accnt | bal : N , none , ATTS@0 > => < A : V@Accnt | bal : ( N + M ) , ATTS@0 > . 
+        crl [ debit ] : debit ( A , M ) < A : V@Accnt | bal : N , none , ATTS@0 > => < A : V@Accnt | bal : ( N - M ) , ATTS@0 > if N > M = true . 
+        crl [ transfer ] : ( transfer M from A to B ) < A : V@Accnt | bal : N , none , ATTS@0 > < B : V@Accnt1 | bal : N' , none , ATTS@2 > => < A : V@Accnt | bal : ( N - M ) , ATTS@0 > < B : V@Accnt1 | bal : ( N' + M ) , ATTS@2 > if N > M = true . 
+endm
+  )
+  
+  (rew < 'Peter : Accnt | bal : 2000 > 
+       debit('Peter, 1000) .)
+  
+*** Rewrite in ACCNT : < 'Peter : Accnt | bal : 2000 > 
+***                    debit ( 'Peter , 1000 ) . 
+*** Result Object : < 'Peter : Accnt | bal : 1000 >
+  
+  (omod SAV-ACCNT is
+    including ACCNT .
+    class SavAccnt | rate : MachineInt .
+    subclass SavAccnt < Accnt .
+   endom)
+  
+  (show all SAV-ACCNT .)
+  
+  ***(  As prepared for the manual...
+
+  mod SAV-ACCNT is 
+    including ACCNT .
+    sorts SavAccnt . 
+    subsort SavAccnt < Cid . 
+    subsort SavAccnt < Accnt . 
+    op SavAccnt : -> SavAccnt . 
+    op rate`:_ : MachineInt -> Attribute . 
+    none
+    none
+    none
+  endm
+  )
+  
+  (rew < 'Paul : SavAccnt | bal : 5000, rate : 3 >
+       < 'Peter : Accnt | bal : 2000 >
+       < 'Mary : SavAccnt | bal : 9000, rate : 3 >
+       debit('Peter, 1000)
+       credit('Paul, 1300)
+       credit('Mary, 200) .)
+  
+*** Rewrite in SAV-ACCNT : < 'Paul : SavAccnt | bal : 5000 , rate : 3 > 
+***                        < 'Peter : Accnt | bal : 2000 > 
+***                        < 'Mary : SavAccnt | bal : 9000 , rate : 3 > 
+***                        debit ( 'Peter , 1000 ) 
+***                        credit ( 'Paul , 1300 ) 
+***                        credit ( 'Mary , 200 ) . 
+*** Result Configuration : < 'Peter : Accnt | bal : 1000 > 
+***                        < 'Paul : SavAccnt | bal : 6300 , rate : 3 > 
+***                        < 'Mary : SavAccnt | bal : 9200 , rate : 3 >
+  
+  (fth TRIV is 
+    sort Elt .
+   endfth)
+  
+  (fmod LIST[X :: TRIV] is
+    sort List[X] .  
+    subsort Elt.X < List[X] .
+    op nil : -> List[X] .
+    op __ : List[X] List[X] -> List[X] [assoc id: nil] .
+   endfm)
+  
+  (fmod PAIR[X :: TRIV, Y :: TRIV] is
+    sort Pair[X, Y] .
+    op <_;_> : Elt.X Elt.Y -> Pair[X, Y] .
+    op 1st : Pair[X, Y] -> Elt.X .
+    op 2nd : Pair[X, Y] -> Elt.Y .
+    var A : Elt.X . 
+    var B : Elt.Y .
+    eq 1st(< A ; B >) = A .
+    eq 2nd(< A ; B >) = B .
+   endfm)
+  
+  (view MachineInt from TRIV to MACHINE-INT is
+    sort Elt to MachineInt .
+   endv)
+  
+  (view Pair`[MachineInt`,MachineInt`] 
+        from TRIV to PAIR[MachineInt, MachineInt] is
+    sort Elt to Pair[MachineInt, MachineInt] .
+   endv)
+  
+  (omod CHK-ACCNT is
+    including ACCNT .
+    protecting LIST[Pair`[MachineInt`,MachineInt`]] 
+           * (sort List[Pair`[MachineInt`,MachineInt`]] to ChkHist, 
+              sort Pair[MachineInt, MachineInt] to Chk, 
+              op <_;_> to <<_;_>>) .
+    class ChkAccnt | chk-hist : ChkHist .
+    subclass ChkAccnt < Accnt .
+    msg chk_#_amt_ : Oid MachineInt MachineInt -> Msg .
+    var A : Oid .
+    vars K M N : MachineInt .
+    var H : ChkHist .
+    crl [check] :
+        (chk A # K amt M)
+        < A : ChkAccnt | bal : N, chk-hist : H >
+        => < A : ChkAccnt | bal : (N - M), chk-hist : (H << K ; M >>) >
+           if N > M .
+   endom)
+  
+  (rew < 'Paul : ChkAccnt | bal : 5000, chk-hist : nil >
+       < 'Peter : Accnt | bal : 2000 >
+       < 'Mary : ChkAccnt | bal : 9000, chk-hist : nil >
+       debit('Peter, 1000)
+       (chk 'Paul # 123 amt 800)
+       credit('Paul, 1300)
+       credit('Mary, 200) .)
+  
+*** Rewrite in CHK-ACCNT : < 'Paul : ChkAccnt | bal : 5000 , chk-hist : nil > 
+***                        < 'Peter : Accnt | bal : 2000 > 
+***                        < 'Mary : ChkAccnt | bal : 9000 , chk-hist : nil > 
+***                        debit ( 'Peter , 1000 ) 
+***                        ( chk 'Paul # 123 amt 800 ) 
+***                        credit ( 'Paul , 1300 ) 
+***                        credit ( 'Mary , 200 ) . 
+*** Result Configuration : < 'Peter : Accnt | bal : 1000 > 
+***                        < 'Paul : ChkAccnt | bal : 5500 , 
+***                                             chk-hist : << 123 ; 800 >> > 
+***                        < 'Mary : ChkAccnt | bal : 9200 , chk-hist : nil >
+  
+  (omod CHK-ACCNT is
+    including CHK-ACCNT .
+    including SAV-ACCNT .
+    class ChkSavAccnt .
+    subclasses ChkSavAccnt < ChkAccnt SavAccnt .
+   endom)
+  
+  (rew < 'Paul : ChkSavAccnt | bal : 5000, chk-hist : nil >
+       < 'Peter : Accnt | bal : 2000 >
+       < 'Mary : ChkAccnt | bal : 9000, chk-hist : nil >
+       debit('Peter, 1000)
+       (chk 'Paul # 123 amt 800)
+       credit('Paul, 1300)
+       credit('Mary, 200) .)
+  
+*** Rewrite in CHK-ACCNT : < 'Paul : ChkSavAccnt | bal : 5000 , 
+***                                                chk-hist : nil > 
+***                        < 'Peter : Accnt | bal : 2000 > 
+***                        < 'Mary : ChkAccnt | bal : 9000 , chk-hist : nil > 
+***                        debit ( 'Peter , 1000 ) 
+***                        ( chk 'Paul # 123 amt 800 ) 
+***                        credit ( 'Paul , 1300 ) 
+***                        credit ( 'Mary , 200 ) . 
+*** Result Configuration : < 'Peter : Accnt | bal : 1000 > 
+***                        < 'Paul : ChkSavAccnt | bal : 5500 , 
+***                                              chk-hist : << 123 ; 800 >> >  
+***                        < 'Mary : ChkAccnt | bal : 9200 , chk-hist : nil >
+  
+  (show all .)
+
+  ***(
+mod CHK-ACCNT is 
+        including QID . 
+        including MACHINE-INT . 
+        sorts AttributeSet Cid Attribute Object Oid Configuration Msg Accnt SavAccnt ChkHist Chk ChkAccnt ChkSavAccnt . 
+        subsort Qid < Oid . 
+        subsort Attribute < AttributeSet . 
+        subsort Object < Configuration . 
+        subsort Msg < Configuration . 
+        subsort Accnt < Cid . 
+        subsort SavAccnt < Cid . 
+        subsort SavAccnt < Accnt . 
+        subsort Chk < ChkHist . 
+        subsort ChkAccnt < Cid . 
+        subsort ChkAccnt < Accnt . 
+        subsort ChkSavAccnt < Cid . 
+        subsort ChkSavAccnt < SavAccnt . 
+        subsort ChkSavAccnt < ChkAccnt . 
+        op __ : Configuration Configuration -> Configuration [ assoc comm id: empty ] . 
+        op __ : ChkHist ChkHist -> ChkHist [ assoc id: nil ] . 
+        op _`,_ : AttributeSet AttributeSet -> AttributeSet [ assoc comm id: none ] . 
+        op nil : -> ChkHist . 
+        op none : -> AttributeSet . 
+        op empty : -> Configuration . 
+        op <_:_|_> : Oid Cid AttributeSet -> Object . 
+        op <_:_|`> : Oid Cid -> Object . 
+        op Accnt : -> Accnt . 
+        op credit : Oid MachineInt -> Msg . 
+        op debit : Oid MachineInt -> Msg . 
+        op transfer_from_to_ : MachineInt Oid Oid -> Msg . 
+        op bal`:_ : MachineInt -> Attribute . 
+        op SavAccnt : -> SavAccnt . 
+        op rate`:_ : MachineInt -> Attribute . 
+        op 1st : Chk -> MachineInt . 
+        op 2nd : Chk -> MachineInt . 
+        op <<_;_>> : MachineInt MachineInt -> Chk . 
+        op ChkAccnt : -> ChkAccnt . 
+        op chk_#_amt_ : Oid MachineInt MachineInt -> Msg . 
+        op chk-hist`:_ : ChkHist -> Attribute . 
+        op ChkSavAccnt : -> ChkSavAccnt . 
+        var V@Accnt : Accnt . 
+        var ATTS@0 : AttributeSet . 
+        var V@Accnt1 : Accnt . 
+        var ATTS@2 : AttributeSet . 
+        var N'@MachineInt : MachineInt . 
+        var N@MachineInt : MachineInt . 
+        var M@MachineInt : MachineInt . 
+        var B@Oid : Oid . 
+        var A@Oid : Oid . 
+        var V@SavAccnt : SavAccnt . 
+        var B@MachineInt : MachineInt . 
+        var A@MachineInt : MachineInt . 
+        var V@ChkAccnt : ChkAccnt . 
+        var K@MachineInt : MachineInt . 
+        var H@ChkHist : ChkHist . 
+        var V@ChkSavAccnt : ChkSavAccnt . 
+        eq 1st ( << A@MachineInt ; B@MachineInt >> ) = A@MachineInt . 
+        eq 2nd ( << A@MachineInt ; B@MachineInt >> ) = B@MachineInt . 
+        rl [ credit ] : credit ( A@Oid , M@MachineInt ) < A@Oid : V@Accnt | bal : N@MachineInt , none , ATTS@0 > => < A@Oid : V@Accnt | bal : ( N@MachineInt + M@MachineInt ) , ATTS@0 > . 
+        crl [ debit ] : debit ( A@Oid , M@MachineInt ) < A@Oid : V@Accnt | bal : N@MachineInt , none , ATTS@0 > => < A@Oid : V@Accnt | bal : ( N@MachineInt - M@MachineInt ) , ATTS@0 > if N@MachineInt > M@MachineInt = true . 
+        crl [ transfer ] : ( transfer M@MachineInt from A@Oid to B@Oid ) < A@Oid : V@Accnt | bal : N@MachineInt , none , ATTS@0 > < B@Oid : V@Accnt1 | bal : N'@MachineInt , none , ATTS@2 > => < A@Oid : V@Accnt | bal : ( N@MachineInt - M@MachineInt ) , ATTS@0 > < B@Oid : V@Accnt1 | bal : ( N'@MachineInt + M@MachineInt ) , ATTS@2 > if N@MachineInt > M@MachineInt = true . 
+        crl [ check ] : ( chk A@Oid # K@MachineInt amt M@MachineInt ) < A@Oid : V@ChkAccnt | chk-hist : H@ChkHist , bal : N@MachineInt , none , ATTS@0 > => < A@Oid : V@ChkAccnt | bal : ( N@MachineInt - M@MachineInt ) , chk-hist : ( H@ChkHist << K@MachineInt ; M@MachineInt >> ) , ATTS@0 > if N@MachineInt > M@MachineInt = true . 
+endm
+  )

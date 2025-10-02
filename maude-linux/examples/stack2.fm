@@ -1,0 +1,103 @@
+  (oth CELL is
+    sort Elt .
+    class Cell | contents : Elt .
+   endoth)
+
+  (omod STACK2[X :: CELL] is
+    protecting MACHINE-INT .
+    protecting QID .
+    subsort Qid < Oid .
+    class Node[X] | next : Oid, node : Oid .
+    class Stack[X] | first : Oid .
+    msg _push_ : Oid Oid -> Msg .
+    msg _pop : Oid -> Msg .
+    msg _top_ : Oid Oid -> Msg .
+    msg _elt_ : Oid Elt.X -> Msg .
+  
+    op null : -> Oid .
+    op o : Oid MachineInt -> Oid .
+  
+    vars O O' O'' O''' : Oid .
+    var E : Elt.X .
+    var N : MachineInt .
+  
+    rl [top] : *** top defined only on non-empty stacks
+       < O : Stack[X] | first : O' > < O' : Node[X] | node : O'' >
+       < O'' : Cell.X | contents : E > (O top O''')
+       => < O : Stack[X] | > < O' : Node[X] | >
+          < O'' : Cell.X | > (O'' elt E) .
+  
+    rl [push1] : *** push on a non-empty stack
+       < O : Stack[X] | first : o(O, N) > (O push O')
+       => < O : Stack[X] | first : o(O, N + 1) >
+          < o(O, N + 1) : Node[X] | next : o(O, N), node : O' > .
+    rl [push2] : *** push on an empty stack
+       < O : Stack[X] | first : null > (O push O')
+       => < O : Stack[X] | first : o(O, 0) >
+          < o(O, 0) : Node[X] | next : null, node : O' > .
+  
+    rl [pop] : *** pop defined only on non-empty stacks
+       < O : Stack[X] | first : O' >
+       < O' : Node[X] | next : O'' > (O pop)
+       => < O : Stack[X] | first : O'' > .
+   endom)
+
+  (omod ACCNT is 
+    protecting MACHINE-INT .  
+    class Accnt | bal : MachineInt .  
+    msg credit : Oid MachineInt -> Msg .  
+    msg debit : Oid MachineInt -> Msg .  
+    msg transfer_from_to_ : MachineInt Oid Oid -> Msg .  
+    vars A B : Oid . 
+    vars M N N' : MachineInt .  
+    rl [credit] : credit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N + M) > .  
+    crl [debit] : debit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N - M) >
+          if N > M .  
+    crl [transfer] : (transfer M from A to B)
+       < A : Accnt | bal : N > < B : Accnt | bal : N' > 
+       => < A : Accnt | bal : (N - M) > < B : Accnt | bal : (N' + M) >
+          if N > M . 
+   endom)
+  
+  (view Accnt from CELL to ACCNT is
+    sort Elt to MachineInt .
+    class Cell to Accnt .
+    attr contents . Cell to bal .
+   endv)
+  
+  (omod EXAMPLE is
+    protecting STACK2[Accnt] .
+  
+    op init : -> Configuration .
+    op stack : -> Oid .
+    op paul : -> Oid .
+    op peter : -> Oid .
+    op mary : -> Oid .
+  
+    eq init
+      = < stack : Stack[Accnt] | first : null >
+        < paul : Accnt | bal : 5000 >
+        < peter : Accnt | bal : 2000 >
+        < mary : Accnt | bal : 7200 >
+        (stack push paul)
+        (stack push peter)
+        (stack push mary)
+        (stack top peter)
+        (stack pop) .
+   endom)
+  
+  (rew init .)
+  
+  *** Rewrite in EXAMPLE : init . 
+  *** Result Configuration : 
+  ***        ( peter elt 2000 ) 
+  ***        < stack : Stack [ Accnt ] | first : o ( stack , 1 ) > 
+  ***        < paul : Accnt | bal : 5000 > 
+  ***        < peter : Accnt | bal : 2000 > 
+  ***        < mary : Accnt | bal : 7200 > 
+  ***        < o ( stack , 0 ) : Node [ Accnt ] | 
+  ***                      next : null , node : peter > 
+  ***        < o ( stack , 1 ) : Node [ Accnt ] | 
+  ***                      next : o ( stack , 0 ) , node : mary >

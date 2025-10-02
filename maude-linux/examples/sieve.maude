@@ -1,0 +1,37 @@
+  fmod SIEVE is
+    protecting MACHINE-INT .
+    sort IntList .
+    subsort MachineInt < IntList .
+    op nil : -> IntList .
+    op _._ : IntList IntList -> IntList 
+        [assoc id: nil strat (0)] .
+    op force : IntList IntList -> IntList [strat (1 2 0)] .
+    op show_upto_ : IntList MachineInt -> IntList .
+    op filter_with_ : IntList MachineInt -> IntList .
+    op ints-from_ : MachineInt -> IntList .
+    op sieve_ : IntList -> IntList .
+    op primes : -> IntList .
+
+    var P I E : MachineInt .
+    var S L : IntList .
+
+    eq force(L, S) = L . S .
+    eq show nil upto I = nil .
+    eq show E . S upto I 
+      = if I == 0 then nil
+        else force(E, show S upto (I - 1)) 
+        fi . 
+    eq filter nil with P = nil .
+    eq filter I . S with P 
+      = if (I % P) == 0 then filter S with P
+        else I . filter S with P 
+        fi .
+    eq ints-from I = I . ints-from (I + 1) .
+    eq sieve nil = nil .
+    eq sieve (I . S) = I . sieve (filter S with I) .
+    eq primes = sieve ints-from 2 .
+  endfm
+
+  reduce show primes upto 10 .
+  *** result IntList: 2 . 3 . 5 . 7 . 11 . 13 . 17 . 19 . 23 . 29
+

@@ -1,0 +1,985 @@
+(fmod MACHINE-INT* is
+   protecting MACHINE-INT .
+
+   var N : MachineInt .
+   var M : MachineInt .
+
+   *** difference of two numbers
+   op dif : MachineInt MachineInt -> MachineInt .
+   eq dif(N, M) 
+     = if N > M 
+       then N - M 
+       else M - N 
+       fi .
+
+   *** maximum of two numbers
+   op max : MachineInt MachineInt -> MachineInt .
+   eq max(N, M) 
+     = if N > M 
+       then N  
+       else M 
+       fi .
+ endfm)
+
+
+(fth TRIV is 
+  sort Elt .
+ endfth)
+
+
+(fmod DEFAULT[Y :: TRIV] is
+  sort Default[Y] .
+  subsort Elt.Y < Default[Y] .
+  op null : -> Default[Y] .
+ endfm)
+
+
+(fmod PAIR[X :: TRIV, Y :: TRIV] is
+  sort Pair[X, Y] .
+
+  op <_;_> : Elt.X Elt.Y -> Pair[X, Y] .
+  op 1st : Pair[X, Y] -> Elt.X .
+  op 2nd : Pair[X, Y] -> Elt.Y .
+
+  var A : Elt.X . 
+  var B : Elt.Y .
+
+  eq 1st(< A ; B >) = A .
+  eq 2nd(< A ; B >) = B .
+ endfm)
+
+
+(fmod TRIPLE[X :: TRIV, Y :: TRIV, Z :: TRIV] is
+  sort Triple[X, Y, Z] .
+
+  op <_;_;_> : Elt.X Elt.Y Elt.Z -> Triple[X, Y, Z] .
+  op 1st : Triple[X, Y, Z] -> Elt.X .
+  op 2nd : Triple[X, Y, Z] -> Elt.Y .
+  op 3rd : Triple[X, Y, Z] -> Elt.Z .
+
+  var A : Elt.X . 
+  var B : Elt.Y . 
+  var C : Elt.Z .
+
+  eq 1st(< A ; B ; C >) = A .
+  eq 2nd(< A ; B ; C >) = B .
+  eq 3rd(< A ; B ; C >) = C .
+ endfm)
+
+
+(fmod LIST[X :: TRIV] is
+  sort List[X] .  
+  subsort Elt.X < List[X] .
+
+  op nil : -> List[X] .
+  op _._ : List[X] List[X] -> List[X] [assoc id: nil] .
+ endfm)
+
+
+(fmod SET[X :: TRIV] is 
+  protecting BOOL .
+
+  sorts Set[X] NeSet[X] . 
+  subsorts Elt.X < NeSet[X] < Set[X] .
+
+  op mt : -> Set[X] .
+  op __ : Set[X] Set[X] -> Set[X] [assoc comm id: mt] .
+  op __ : NeSet[X] NeSet[X] -> NeSet[X] [assoc comm id: mt] .
+  op _in_ : Elt.X Set[X] -> Bool .
+
+  vars E E' : Elt.X . 
+  var S : Set[X] .
+
+  eq E E = E .
+
+  eq E in mt = false .
+  eq E in (E' S) = E == E' or (E in S) .
+ endfm)
+
+
+(fth FUNCTION is
+  sorts Domain Codomain .
+  op f : Domain -> Codomain .
+ endfth)
+
+
+(view Domain from TRIV to FUNCTION is
+  sort Elt to Domain .
+ endv)
+
+
+(view Codomain from TRIV to FUNCTION is
+  sort Elt to Codomain .
+ endv)
+
+
+(fmod MAP[F :: FUNCTION] is 
+  protecting (SET[Domain] * (op __ to _;_))[F] .
+  protecting SET[Codomain][F] .
+
+  op map : Set[Domain][F] -> Set[Codomain][F] .
+
+  var A : Domain.F . 
+  var S : Set[Domain][F] .
+
+  eq map(mt) = (mt).Set`[Codomain`]`[F`] .
+  eq map(A ; S) = f(A) map(S) .
+ endfm)
+
+
+(fmod PFUN[U :: TRIV, V :: TRIV] is 
+  protecting BOOL .
+
+  protecting DEFAULT[V] .
+
+  *** protecting PAIR[U, Default[V]] not supported.  
+  *** We use Pair[U, V] instead of Pair[U, Default[V]]
+
+  sort Pair[U, V] .
+
+  op <_;_> : Elt.U Default[V] -> Pair[U, V] .
+  op 1st : Pair[U, V] -> Elt.U .
+  op 2nd : Pair[U, V] -> Default[V] .
+
+  var A : Elt.U . 
+  var B : Default[V] .
+
+  eq 1st(< A ; B >) = A .
+  eq 2nd(< A ; B >) = B .
+
+  *** protecting SET[Pair[U, Default[V]]] not supported.  
+  *** We would like to be able to write
+  *** pr SET[Pair[U, Default[V]]] 
+  ***      * (sort Set[Pair[U, Default[V]]] to PairSet[U, Default[V]],
+  ***         sort NeSet[Pair[U, Default[V]]] to NePairSet[U, Default[V]]) .
+  *** We use PairSet[U, V] and NePairSet[U, V] instead of 
+  *** PairSet[U, Default[V]] and NePairSet[U, Default[V]].
+
+  sorts PairSet[U, V] NePairSet[U, V] . 
+  subsorts Pair[U, V] < NePairSet[U, V] < PairSet[U, V] .
+
+  op mt : -> PairSet[U, V] .
+  op __ : PairSet[U, V] PairSet[U, V] -> PairSet[U, V] 
+        [assoc comm id: (mt).PairSet`[U`,V`]] .
+  op __ : NePairSet[U, V] NePairSet[U, V] -> NePairSet[U, V] 
+        [assoc comm id: (mt).PairSet`[U`,V`]] .
+  op _in_ : Pair[U, V] PairSet[U, V] -> Bool .
+
+  vars E E' : Pair[U, V] . 
+  var S : PairSet[U, V] .
+
+  eq E E = E .
+
+  eq E in (mt).PairSet`[U`,V`] = false .
+  eq E in (E' S) = (E == E') or (E in S) .
+
+  *** We would like to be able to write
+  *** 
+  *** pr MAP[view to PAIR[U, Default[V]] is 
+  ***          sort Domain to Pair[U, Default[V]] . 
+  ***          sort Codomain to Elt.U . 
+  ***          op f to 1st . 
+  ***        endv]
+  ***      * (sort Set[Domain][U] to PairSet[U, Default[V]], 
+  ***         sort Set[Codomain][Default[V]] to Set[U], 
+  ***         op map to dom) .
+  *** 
+  *** and
+  *** 
+  *** pr MAP[view to PAIR[U, Default[V]] is 
+  ***          sort Domain to Pair[U, Default[V]] . 
+  ***          sort Codomain to Default[V] . 
+  ***          op f to 2nd . 
+  ***        endv]
+  ***      * (sort Set[Domain][U] to PairSet[U, Default[V]], 
+  ***         sort Set[Codomain][Default[V]] to Set[Default[V]], 
+  ***         op map to im) .
+  *** 
+  *** Instead, we use Set[U] and Set[V]
+
+  protecting SET[U] .
+  *** protecting SET[Default[V]] not supported.  
+  *** We use Set[V] instead of Set[Default[V]].
+  protecting SET[V] .
+
+  sort PFun[U, V] .
+
+  subsorts Pair[U, V] < PFun[U, V] < PairSet[U, V] .
+
+  op mt : -> PFun[U, V] .
+  op _`[_`] : PFun[U, V] Elt.U -> Default[V] .
+  op _`[_->_`] : PFun[U, V] Elt.U Default[V] -> PFun[U, V] .
+
+  vars C : Default[V] . 
+  var F : PFun[U, V] .
+
+  op dom : PairSet[U, V] -> Set[U] .  *** domain
+  eq dom((mt).PairSet`[U`,V`]) = (mt).Set`[U`] .
+  eq dom(< A ; B > S) = A dom(S) .
+
+  op im : PairSet[U, V] -> Set[V] .   *** image
+  eq im((mt).PairSet`[U`,V`]) = (mt).Set`[V`] .
+  eq im(< A ; B > S) = B im(S) .
+
+  cmb < A ; B > F : PFun[U, V] 
+    if not(A in dom(F)) .
+
+  eq (< A ; B > F)[ A ] = B .
+  ceq F [ A ] 
+    = null 
+      if not(A in dom(F)) .
+  eq (< A ; B > F)[ A -> C ] 
+    = < A ; C > F .
+  ceq F [ A -> C ] 
+    = < A ; C > F 
+      if not(A in dom(F)) .
+ endfm)
+
+
+*** the following data type of Ports will be used for the input and output
+*** ports of filter objects in the pipe and filters model.
+
+
+(view NzMachineInt from TRIV to MACHINE-INT* is
+  sort Elt to NzMachineInt .
+ endv)
+
+
+(fmod PORTS[X :: TRIV] is 
+  protecting BOOL .
+  protecting PFUN[NzMachineInt, X] 
+              * (sort Pair[NzMachineInt, X] to Port[X],
+                 sort PairSet[NzMachineInt, X] to PortSet[X],
+                 sort NePairSet[NzMachineInt, X] to NePortSet[X]) . 
+
+  op put : Default[X] PortSet[X] -> PortSet[X] .
+     *** set the value of all the ports to the given value
+  op flush : PortSet[X] -> PortSet[X] .
+     *** set all the ports to null
+  op empty : PortSet[X] -> Bool .
+     *** true if all the ports in the set are set to null
+  op full : PortSet[X] -> Bool .
+     *** true if all the ports in the set ar different from null
+
+  var N : NzMachineInt . 
+  vars A B : Default[X] . 
+  var S : PortSet[X] .
+
+  eq put(B, mt) 
+    = (mt).PortSet`[X`] .
+  eq put(B, (< N ; A > S)) 
+    = < N ; B > put(B, S) .
+
+  eq flush(S) 
+    = put(null, S) .
+
+  eq empty(mt) 
+    = true .
+  eq empty(< N ; A > S) 
+    = (A == null) and empty(S) .
+
+  eq full(mt) 
+    = true .
+  eq full(< N ; A > S) 
+    = (A =/= null) and full(S) .
+ endfm)
+
+
+(omod OID is 
+  protecting MACHINE-INT* .
+  op o : MachineInt -> Oid .
+ endom)
+
+
+(view MachineInt from TRIV to MACHINE-INT* is
+  sort Elt to MachineInt .
+ endv)
+
+
+(view Triple`[MachineInt`,MachineInt`,MachineInt`] 
+       from TRIV 
+       to TRIPLE[MachineInt,MachineInt,MachineInt] is
+   sort Elt to Triple[MachineInt, MachineInt, MachineInt] .
+ endv)
+
+
+(view List`[MachineInt`] from TRIV to LIST[MachineInt] is
+   sort Elt to List[MachineInt] .
+ endv)
+
+
+(view Image from TRIV to LIST[MachineInt]*(sort List[MachineInt] to Image) is
+  sort Elt to Image .
+ endv)
+
+
+*** A sighting consists of two-dimensional coords plus a time, plus
+*** an image described as a list of block heights.
+*** For example, the image of a destroyer, with shape 
+***
+***                          #
+***                          # # #
+***                      # # # # # #
+***                      # # # # # #,
+***
+*** is given by the list 2 . 2 . 4 . 3 . 3 . 2.
+
+(fmod SIGHTING is 
+  pr LIST[MachineInt]*(sort List[MachineInt] to Image) .
+  pr PAIR[Triple`[MachineInt`,MachineInt`,MachineInt`], Image]
+       *(sort Triple[MachineInt, MachineInt, MachineInt] to Location, 
+         sort Pair[Triple`[MachineInt`,MachineInt`,MachineInt`], Image] 
+                   to Sighting,
+         op 1st : Pair[Triple`[MachineInt`,MachineInt`,MachineInt`], Image] 
+                   -> Triple`[MachineInt`,MachineInt`,MachineInt`] to sighting,
+         op 2nd : Pair[Triple`[MachineInt`,MachineInt`,MachineInt`], Image] 
+                   -> Image to image) .  
+
+  op distance : Image Image -> MachineInt .  *** distance between two images
+  op size : Image -> MachineInt .
+  op aircraft-carrier : -> Image .
+  op oil-tanker : -> Image .
+  op destroyer : -> Image .
+  op speedboat : -> Image .
+
+  vars N M : MachineInt . 
+  vars L Q : Image .
+
+  eq size(nil) = 0 .
+  eq size(N) = N .
+  eq size(N . L) = N + size(L) .
+  eq distance(nil, L) = size(L) .
+  eq distance(L, nil) = size(L) .
+  eq distance(N, M . L) = dif(N, M) + size(L) .
+  eq distance(M . L, N) = dif(N, M) + size(L) .
+  eq distance(N . L, M . Q) = dif(N, M) + distance(L, Q) .
+  eq aircraft-carrier = 3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3 .
+  eq oil-tanker = 2 . 2 . 2 . 2 . 2 . 2 . 2 . 3 .
+  eq destroyer = 2 . 2 . 4 . 3 . 3 . 2 .
+  eq speedboat = 1 . 1 .
+ endfm)
+
+
+(view Oid from TRIV to OID is
+  sort Elt to Oid .
+ endv)
+
+
+(view Pair`[Oid`,NzMachineInt`] from TRIV to PAIR[Oid, NzMachineInt] is
+  sort Elt to Pair[Oid, NzMachineInt] .
+ endv)
+
+
+(omod PIPE[X :: TRIV] is 
+  pr DEFAULT[Pair`[Oid`,NzMachineInt`]] 
+             * (sort Default[Pair`[Oid`,NzMachineInt`]] to DfltAddr) .
+  pr LIST[X] .
+
+  class Pipe[X] | from : DfltAddr, to : DfltAddr, q : List[X] .
+ endom)
+
+
+(omod FILTER[X :: TRIV] is 
+  including PIPE[X] .
+  protecting PORTS[X] . 
+
+  class Filter[X] | in : PortSet[X], out : PortSet[X] . 
+
+  vars O P : Oid . 
+  var N : NzMachineInt . 
+  var E : Elt.X . 
+  var S : PortSet[X] . 
+  var Q : List[X] .
+  
+  rl [filter-1] :
+   < O : Filter[X] | out : (< N ; E > S) > 
+   < P : Pipe[X] | from : < O ; N >, q : Q >
+   => < O : Filter[X] | out : (< N ; null > S) > 
+      < P : Pipe[X] | q : (E . Q) > .
+
+  rl [filter-2] :
+   < O : Filter[X] | in : (< N ; null > S) > 
+   < P : Pipe[X] | to : < O ; N >, q : E >
+   => < O : Filter[X] | in : (< N ; E > S) > 
+      < P : Pipe[X] | q : nil > .
+
+  rl [filter-3] :
+   < O : Filter[X] | in : (< N ; null > S) > 
+   < P : Pipe[X] | to : < O ; N >, q : (Q . E) >
+   => < O : Filter[X] | in : (< N ; E > S) > 
+      < P : Pipe[X] | q : Q > .
+ endom)
+
+
+(omod FANOUT[X :: TRIV] is 
+  including FILTER[X] .
+
+  class Fanout[X] | cnt : MachineInt .
+  subclass Fanout[X] < Filter[X] .
+
+  var E : Elt.X . 
+  var S : PortSet[X] . 
+  var F : Oid .
+  var N : MachineInt .
+
+  crl [fanout] :
+   < F : Fanout[X] | in : < 1 ; E >, out : S, cnt : N > 
+   => < F : Fanout[X] | in : < 1 ; (null).Default`[X`] >, 
+                        out : put(E, S), 
+                        cnt : (N + 1) > 
+      if empty(S) and not (E == (null).Default`[X`]) .
+ endom)
+
+
+(view Sighting from TRIV to SIGHTING is
+  sort Elt to Sighting .
+ endv)
+
+
+(view Loc-Eval from FUNCTION 
+               to PAIR[Sighting, MachineInt] 
+                    * (sort Pair[Sighting, MachineInt] to Loc-Eval) is
+    sort Domain to Loc-Eval .
+    sort Codomain to Location .
+    var D : Domain .
+    op f(D) to term sighting(1st(D)) .
+ endv)
+
+
+(view ImageSight from TRIV to SIGHTING is
+  sort Elt to Image .
+ endv)
+
+
+(view Pair`[ImageSight`,MachineInt`] 
+       from TRIV to PAIR[ImageSight, MachineInt] is
+    sort Elt to Pair[ImageSight, MachineInt] .
+ endv)
+
+
+(fmod DATA is 
+  protecting SIGHTING .
+  protecting MAP[Loc-Eval]
+              *(sort Set[Domain][Loc-Eval] to Loc-Evals, 
+                sort NeSet[Domain][Loc-Eval] to Ne-Loc-Evals, 
+                op mt : -> Set[Domain][Loc-Eval] to mt-Loc-Evals,
+                sort Set[Codomain][Loc-Eval] to Locations, 
+                sort NeSet[Codomain][Loc-Eval] to Ne-Locations, 
+                op mt : -> Set[Codomain][Loc-Eval] to mt-Locations,
+                op map to locs) .
+  protecting SET[Pair`[ImageSight`,MachineInt`]]
+               *(sort Pair[ImageSight, MachineInt] to Eval, 
+                 sort Set[Pair`[ImageSight`,MachineInt`]] to Evals,
+                 sort NeSet[Pair`[ImageSight`,MachineInt`]] to NeEvals,
+                 op mt to mt-Evals) .
+
+  sort Data .
+  subsort Sighting < Data .
+  subsort Loc-Evals < Data .
+
+  op unidentified-object : -> Eval .
+  op winners : Loc-Evals NzMachineInt -> Evals .
+
+  var LEVS : Loc-Evals . 
+  vars N M : MachineInt . 
+  var L : Location . 
+  var I : Image .
+
+  eq winners(mt-Loc-Evals, N) = mt-Evals .
+  eq winners((< < L ; I > ; M > ; LEVS), N) 
+    = if N > M
+      then (< I ; M > winners(LEVS, N))
+      else winners(LEVS, N) 
+      fi .
+ endfm)
+
+
+(view Data from TRIV to DATA is 
+  sort Elt to Data .
+ endv)
+
+
+(omod RECOGNIZER is
+  including FILTER[Data] .
+
+  class Recognizer | model : Image .
+  subclass Recognizer < Filter[Data] .
+
+  var L : Location . 
+  vars I M : Image . 
+  var R : Oid .
+
+  rl [recognizer] :
+   < R : Recognizer | in : < 1 ; < L ; I > >, out : < 1 ; null >, model : M >  
+   => < R : Recognizer | 
+         in : < 1 ; null >, 
+         out : < 1 ; < < L ; M > ; distance(I, M) > > > .
+
+  *** this rule assumes unique input and output ports and singleton
+  *** data values in them as the way recognizer filters are used.
+ endom)
+
+
+(omod COLLECTOR is 
+  including FILTER[Data] .
+
+  class Collector | cnt : MachineInt .
+  subclass Collector < Filter[Data] .
+
+  op evals : PortSet[Data] -> Loc-Evals .
+
+  var S : PortSet[Data] . 
+  var C : Oid .
+  var N : MachineInt .
+  var D : Data .
+
+  eq evals(< N ; D > S) = (D ; evals(S)).Loc-Evals .
+  eq evals((mt).PortSet`[Data`]) = mt-Loc-Evals .
+
+  crl [collector] :
+   < C : Collector | in : S, out : < 1 ; null >, cnt : N > 
+   => < C : Collector | in : flush(S), out : < 1 ; evals(S) >, cnt : (N + 1) >
+      if full(S) and (S =/= mt) .
+ endom)
+
+
+(omod DISCRIMINATOR is 
+  including COLLECTOR .
+
+  class Discriminator | 
+          collector : Oid, threshold : NzMachineInt, controller : Oid .
+
+  msg to_at_evals_ot : Oid Location Evals -> Msg .
+
+  var S : PortSet[Data] . 
+  vars C D G : Oid . 
+  var N : NzMachineInt . 
+  var LEVS : Loc-Evals .
+
+  crl [discriminator] :
+   < D : Discriminator | collector : C, threshold : N, controller : G >
+   < C : Collector | out : < 1 ; LEVS > >
+     => < D : Discriminator | >
+        < C : Collector | out : < 1 ; null > >
+        (to G at locs(LEVS) evals unidentified-object ot)
+     if (locs(LEVS) : Location) and (winners(LEVS, N) == mt-Evals) .
+  crl [discriminator] :
+   < D : Discriminator | collector : C, threshold : N, controller : G >
+   < C : Collector | out : < 1 ; LEVS > >
+     => < D : Discriminator | >
+        < C : Collector | out : < 1 ; null > >
+        (to G at locs(LEVS) evals winners(LEVS, N) ot)
+     if (locs(LEVS) : Location) and not (winners(LEVS, N) == mt-Evals) .
+  
+  *** the above rule uses the subsort inclusion Location < Locations and 
+  *** assumes that all the located evaluations originate from
+  *** the same sighting and therefore have the same location
+
+ endom)
+
+
+(omod META is 
+  inc RECOGNIZER .
+  inc DISCRIMINATOR .
+  inc FANOUT[Data] .
+  pr DEFAULT[Oid] * (sort Default[Oid] to DftOid) .
+  pr DEFAULT[MachineInt] * (sort Default[MachineInt] to DftMachineInt) .
+
+  sort State .
+
+  op lock : Cid -> Cid .
+  op _._ : Oid MachineInt -> Oid .
+  op ready : -> State .
+  op busy : -> State .
+
+  msg to_install-recognizer_ot : Oid Image -> Msg .
+
+  class Meta | in-pipe : DftOid, out-pipe : DftOid, fanout : DftOid, 
+             recognizer : DftOid, collector : DftOid, state : State, 
+             cnt : DftMachineInt, tag : MachineInt .
+
+  vars M P P' R F C : Oid . 
+  var I : Image .
+  vars N N' : MachineInt . 
+  vars S S' : PortSet[Data] . 
+
+  op max : NeSet[NzMachineInt] -> NzMachineInt .
+  var T : NeSet[NzMachineInt] .
+  eq max(N) = N .
+  ceq max(N T) = N if N > max(T) .
+  ceq max(N T) = max(T) if not (N > max(T)) .
+
+  *** A meta-object can, upon request, dynamically change the configuration 
+  *** of the dataflow network it controls, by adding a new recognizer object 
+  *** to recognize a given image and two new pipes and by hooking it up
+  *** through the pipes to the fanout and collector objects.
+
+  rl [create] :
+   (to M install-recognizer I ot) 
+   < M : Meta | state : ready, tag : N > 
+   => < M : Meta | state : busy, recognizer : (M . N), in-pipe : (M . (N + 1)),
+             out-pipe : (M . (N + 2)), tag : (N + 3) >
+      < (M . N) : Recognizer | in : < 1 ; (null).Default`[Data`] >,
+             out : < 1 ; (null).Default`[Data`] >, model : I >
+      < (M . (N + 1)) : Pipe[Data] | 
+             from : (null).DfltAddr, to : < (M . N) ; 1 >, q : nil >
+      < (M . (N + 2)) : Pipe[Data] | 
+             from : < (M . N) ; 1 >, to : (null).DfltAddr, q : nil > .
+
+  crl [hook-fanout-collector] :
+   < M : Meta | state : busy, recognizer : R, 
+                fanout : F, in-pipe : P, 
+                collector : C, out-pipe : P' > 
+   < F : Fanout[Data] | cnt : N', out : S >
+   < P : Pipe[Data] | from : (null).DfltAddr > 
+   < C : Collector | cnt : N', in : S' > 
+   < P' : Pipe[Data] | to : (null).DfltAddr >
+   => < M : Meta | state : ready, recognizer : (null).DftOid, 
+                in-pipe : (null).DftOid, out-pipe : (null).DftOid >
+      < F : Fanout[Data] | 
+                out : (S < (max(dom(S)) + 1) ; (null).Default`[Data`] >) >
+      < P : Pipe[Data] | from : < F ; (max(dom(S)) + 1) > > 
+      < C : Collector | 
+                in : (S' < (max(dom(S')) + 1) ; (null).Default`[Data`] >) > 
+      < P' : Pipe[Data] | to : < C ; (max(dom(S')) + 1) > >
+      if empty(S) and empty(S') .
+ endom)
+
+
+(omod IMAGE-RECOGNITION is 
+  including META .
+
+  op init-conf : -> Configuration .
+  
+  *** this initial configuration has a pipe feeding images and linked
+  *** to a fanout object that is then linked by pipes to three
+  *** recognizers for speedboats, destroyers, and aircraft carriers
+  *** their evaluations are then fed by other pipes into a collector
+  *** object.  A discriminator object then selects the evaluations
+  *** accurate within a threshold and sends them (or an unidentified
+  *** object report) to a controller object.  Finally, there is a
+  *** metaobject that can dynamically change the dataflow network
+  *** by hooking up to it new recognizers via new pipes.
+
+  eq init-conf 
+    = < o(0) : Pipe[Data] | 
+            from : (null).DfltAddr, 
+            to : < o(1) ; 1 >,
+            q : (< < 1 ; 2 ; 3 > ; (2 . 2 . 4 . 4 . 3 . 2) > .
+                 < < 4 ; 5 ; 2 > ; (2 . 1) > .
+                 < < 7 ; 5 ; 1 > ; (3 . 3 . 3 . 3 . 3 . 5 . 4 . 3 . 3) > . 
+                 < < 0 ; 0 ; 0 > ; (2 . 2 . 2 . 2 . 2 . 2 . 2 . 3) >) >
+    < o(1) : Fanout[Data] | 
+            in : < 1 ; (null).Default`[Data`] >, 
+            out : (< 1 ; (null).Default`[Data`] > 
+                   < 2 ; (null).Default`[Data`] > 
+                   < 3 ; (null).Default`[Data`] >), 
+            cnt : 0 >
+    < o(2) : Pipe[Data] | 
+            from : < o(1) ; 1 >, 
+            to : < o(5) ; 1 >, 
+            q : nil >
+    < o(3) : Pipe[Data] | 
+            from : < o(1) ; 2 >, 
+            to : < o(6) ; 1 >, 
+            q : nil >
+    < o(4) : Pipe[Data] | 
+            from : < o(1) ; 3 >, 
+            to : < o(7) ; 1 >, 
+            q : nil >
+    < o(5) : Recognizer | 
+            in : < 1 ; (null).Default`[Data`] >, 
+            out : < 1 ; (null).Default`[Data`] >, 
+            model : destroyer >
+    < o(6) : Recognizer | 
+            in : < 1 ; (null).Default`[Data`] >, 
+            out : < 1 ; (null).Default`[Data`] >, 
+            model : speedboat >
+    < o(7) : Recognizer | 
+            in : < 1 ; (null).Default`[Data`] >, 
+            out : < 1 ; (null).Default`[Data`] >, 
+            model : aircraft-carrier >
+    < o(8) : Pipe[Data] | 
+            from : < o(5) ; 1 >, 
+            to : < o(11) ; 1 >, 
+            q : nil >
+    < o(9) : Pipe[Data] | 
+            from : < o(6) ; 1 >, 
+            to : < o(11) ; 2 >, 
+            q : nil >
+    < o(10) : Pipe[Data] | 
+            from : < o(7) ; 1 >, 
+            to : < o(11) ; 3 >, 
+            q : nil >
+    < o(11) : Collector | 
+            in : (< 1 ; (null).Default`[Data`] > 
+                  < 2 ; (null).Default`[Data`] > 
+                  < 3 ; (null).Default`[Data`] >),
+            out : < 1 ; (null).Default`[Data`] >, 
+            cnt : 0 >
+    < o(12) : Discriminator | 
+            collector : o(11), 
+            threshold : 4, 
+            controller : o(13) > 
+    < o(13) : Meta | 
+            in-pipe : (null).DftOid, 
+            out-pipe : (null).DftOid, 
+            fanout : o(1), 
+            recognizer : (null).DftOid, 
+            collector : o(11), 
+            state : ready, 
+            cnt : (null).DftMachineInt, 
+            tag : 0 > .
+ endom)
+
+
+(omod IMPLICIT-INVOCATION[M :: TRIV, E :: TRIV, P :: TRIV] is
+
+  pr PFUN[E, M] * (sort PFun[E, M] to Table[E, M]) .
+
+  class Bubble | conf : Configuration .
+  class Implicit | table : Table[E, M] .
+
+  msg to_msg_with_ot : Oid Elt.M Elt.P -> Msg .
+
+  op bc_with_in_cb : Elt.E Elt.P Configuration -> Configuration .
+
+  sort ExtAct .
+  subsort ExtAct < Msg .
+
+  vars B O : Oid . 
+  var M : Elt.M . 
+  var E : Elt.E . 
+  var P : Elt.P . 
+  var T : Table[E, M] .
+  vars C C' : Configuration . 
+  var MSG : Msg . 
+  var EA : ExtAct .
+
+  crl [bc1] :
+   bc E with P in C C' cb
+   => bc E with P in C cb 
+      bc E with P in C' cb 
+      if (C =/= empty) and (C' =/= empty) .
+  rl [bc2] :
+   bc E with P in empty cb 
+   => (empty).Configuration .
+  rl [bc3] :
+   bc E with P in MSG cb 
+   => MSG .
+  crl [bc4] :
+   bc E with P in < O : Implicit | table : T > cb 
+   => < O : Implicit | table : T > 
+      if T[E] == null .
+  crl [bc4] :
+   bc E with P in < O : Implicit | table : T > cb 
+   => to O msg T[E] with P ot 
+      < O : Implicit | table : T > 
+      if not (T[E] == null) .
+
+  rl [out] :
+   < B : Bubble | conf : (EA C) > 
+   => < B : Bubble | conf : C > EA .
+ endom)
+
+
+(fmod OVERALL-SYSTEM0 is
+  sorts Event MsgId .
+
+  op sghtng : -> Event .
+  op air-act : -> MsgId .
+  op bttlshp-act : -> MsgId .
+ endfm)
+
+
+(view MsgId from TRIV to OVERALL-SYSTEM0 is
+  sort Elt to MsgId .
+ endv)
+
+
+(view Event from TRIV to OVERALL-SYSTEM0 is
+  sort Elt to Event .
+ endv)
+
+
+(view Location from TRIV to IMAGE-RECOGNITION is
+  sort Elt to Location .
+ endv)
+
+
+(view Evals from TRIV to IMAGE-RECOGNITION is
+  sort Elt to Evals .
+ endv)
+
+
+(view Pair`[Location`,Evals`] from TRIV to PAIR[Location, Evals] is
+  sort Elt to Pair[Location, Evals] .
+ endv)
+
+
+(omod OVERALL-SYSTEM is 
+  inc IMAGE-RECOGNITION .
+
+  inc IMPLICIT-INVOCATION[MsgId, Event, Pair`[Location`,Evals`]]
+                * (class Bubble to Controller) .
+
+  class Commander | table : Table[Event, MsgId], subordinate : Oid .
+  subclass Commander < Implicit .
+
+  msg to_threat-at_ot : Oid Location -> ExtAct .
+  msg to_recon-at_ot : Oid Location -> ExtAct .
+
+  op q : MachineInt -> Oid .
+
+  vars O Q S : Oid . 
+  var L : Location . 
+  var EVS : Evals . 
+  var C : Configuration .
+
+  rl [control] :
+    to O at L evals EVS ot 
+    < O : Controller | conf : C > 
+    => < O : Controller | conf : (bc sghtng with < L ; EVS > in C cb) > .
+
+  rl [bttlshp-act] :
+    to Q msg bttlshp-act with < L ; EVS > ot 
+    < O : Commander | subordinate : S > 
+    => < O : Commander | > 
+      to S threat-at L ot .
+  rl [air-act] :
+    to Q msg air-act with < L ; EVS > ot 
+    < O : Commander | subordinate : S > 
+    => < O : Commander | > 
+       to S recon-at L ot .
+
+  op syst-conf : -> Configuration .
+
+  eq syst-conf 
+    = init-conf 
+    < o(14) : Controller | 
+         conf : (< q(0) : Commander | table : < sghtng ; air-act >, 
+                                      subordinate : q(1) >
+                 < q(2) : Commander | table : < sghtng ; air-act >, 
+                                      subordinate : q(3) >) > .
+endom)
+
+(rew init-conf .)
+
+*** Rewrite in OVERALL-SYSTEM : init-conf . 
+*** Result Configuration : 
+***    < o(0) : Pipe[Data] | q : nil, from : null, to : < o(1) ; 1 > > 
+***    < o(1) : Fanout[Data] | out : (< 1 ; null > < 2 ; null > < 3 ; null >), 
+***                            in : < 1 ; null >, cnt : 4 > 
+***    < o(2) : Pipe[Data] | q : nil, from : < o(1) ; 1 >, to : < o(5) ; 1 > > 
+***    < o(3) : Pipe[Data] | q : nil, from : < o(1) ; 2 >, to : < o(6) ; 1 > > 
+***    < o(4) : Pipe[Data] | q : nil, from : < o(1) ; 3 >, to : < o(7) ; 1 > > 
+***    < o(5) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (2 . 2 . 4 . 3 . 3 . 2) > 
+***    < o(6) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (1 . 1) > 
+***    < o(7) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3) > 
+***    < o(8) : Pipe[Data] | q : nil, from : < o(5) ; 1 >, 
+***                          to : < o(11) ; 1 > >
+***    < o(9) : Pipe[Data] | q : nil, from : < o(6) ; 1 >, 
+***                           to : < o(11) ; 2 > >
+***    < o(10) : Pipe[Data] | q : nil, from : < o(7) ; 1 >, 
+***                           to : < o(11) ; 3 > > 
+***    < o(11) : Collector | out : < 1 ; null >, 
+***                          in : (< 1 ; null > < 2 ; null > < 3 ; null >), 
+***                          cnt : 4 > 
+***    < o(12) : Discriminator | controller : o(13), threshold : 4, 
+***                              collector : o(11) > 
+***    < o(13) : Meta | cnt : null, collector : o(11), tag : 0, 
+***                     state : ready, out-pipe : null, in-pipe : null, 
+***                     recognizer : null, fanout : o(1) > 
+***    to o(13) at < 0 ; 0 ; 0 > evals unidentified-object ot 
+***    to o(13) at < 1 ; 2 ; 3 > evals < 2 . 2 . 4 . 3 . 3 . 2 ; 1 > ot 
+***    to o(13) at < 4 ; 5 ; 2 > evals < 1 . 1 ; 1 > ot 
+***    to o(13) at < 7 ; 5 ; 1 > 
+***             evals < 3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3 ; 2 > ot
+
+(rew init-conf (to o(13) install-recognizer oil-tanker ot) .)
+*** Rewrite in OVERALL-SYSTEM : 
+***     init-conf 
+***     to o(13) install-recognizer oil-tanker ot . 
+*** Result Configuration : 
+***    < o(0) : Pipe[Data] | q : nil, from : null, to : < o(1) ; 1 > > 
+***    < o(1) : Fanout[Data] | 
+***              out : (< 1 ; null > < 2 ; null > < 3 ; null > < 4 ; null >), 
+***              in : < 1 ; null >, cnt : 4 > 
+***    < o(2) : Pipe[Data] | q : nil, from : < o(1) ; 1 >, to : < o(5) ; 1 > > 
+***    < o(3) : Pipe[Data] | q : nil, from : < o(1) ; 2 >, to : < o(6) ; 1 > > 
+***    < o(4) : Pipe[Data] | q : nil, from : < o(1) ; 3 >, to : < o(7) ; 1 > > 
+***    < o(5) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (2 . 2 . 4 . 3 . 3 . 2) > 
+***    < o(6) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (1 . 1) > 
+***    < o(7) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3) > 
+***    < o(8) : Pipe[Data] | q : nil, from : < o(5) ; 1 >, 
+***                          to : < o(11) ; 1 > > 
+***    < o(9) : Pipe[Data] | q : nil, from : < o(6) ; 1 >, 
+***                          to : < o(11) ; 2 > > 
+***    < o(10) : Pipe[Data] | q : nil, from : < o(7) ; 1 >, 
+***                           to : < o(11) ; 3 > > 
+***    < o(11) : Collector | out : < 1 ; null >, 
+***               in : (< 1 ; null > < 2 ; null > < 3 ; null > < 4 ; null >), 
+***               cnt : 4 > 
+***    < o(12) : Discriminator | controller : o(13), threshold : 4, 
+***                              collector : o(11) > 
+***    < o(13) : Meta | cnt : null, collector : o(11), tag : 3, 
+***                     state : ready, out-pipe : null, in-pipe : null, 
+***                     recognizer : null, fanout : o(1) > 
+***    < o(13) . 0 : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                               model : (2 . 2 . 2 . 2 . 2 . 2 . 2 . 3) > 
+***    < o(13) . 1 : Pipe[Data] | q : nil, from : < o(1) ; 4 >, 
+***                               to : < o(13) . 0 ; 1 > > 
+***    < o(13) . 2 : Pipe[Data] | q : nil, from : < o(13) . 0 ; 1 >, 
+***                               to : < o(11) ; 4 > > 
+***    to o(13) at < 0 ; 0 ; 0 > 
+***             evals < 2 . 2 . 2 . 2 . 2 . 2 . 2 . 3 ; 0 > ot 
+***    to o(13) at < 1 ; 2 ; 3 > evals < 2 . 2 . 4 . 3 . 3 . 2 ; 1 > ot 
+***    to o(13) at < 4 ; 5 ; 2 > evals < 1 . 1 ; 1 > ot 
+***    to o(13) at < 7 ; 5 ; 1 > 
+***             evals < 3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3 ; 2 > ot
+
+(rew syst-conf .)
+*** Rewrite in OVERALL-SYSTEM : syst-conf . 
+*** Result Configuration : 
+***    < o(0) : Pipe[Data] | q : nil, from : null, to : < o(1) ; 1 > > 
+***    < o(1) : Fanout[Data] | out : (< 1 ; null > < 2 ; null > < 3 ; null >), 
+***                            in : < 1 ; null >, cnt : 4 > 
+***    < o(2) : Pipe[Data] | q : nil, from : < o(1) ; 1 >, to : < o(5) ; 1 > > 
+***    < o(3) : Pipe[Data] | q : nil, from : < o(1) ; 2 >, to : < o(6) ; 1 > > 
+***    < o(4) : Pipe[Data] | q : nil, from : < o(1) ; 3 >, to : < o(7) ; 1 > > 
+***    < o(5) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (2 . 2 . 4 . 3 . 3 . 2) > 
+***    < o(6) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (1 . 1) > 
+***    < o(7) : Recognizer | out : < 1 ; null >, in : < 1 ; null >, 
+***                          model : (3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3) > 
+***    < o(8) : Pipe[Data] | q : nil, from : < o(5) ; 1 >, 
+***                          to : < o(11) ; 1 > > 
+***    < o(9) : Pipe[Data] | q : nil, from : < o(6) ; 1 >, 
+***                          to : < o(11) ; 2 > > 
+***    < o(10) : Pipe[Data] | q : nil, from : < o(7) ; 1 >, 
+***                           to : < o(11) ; 3 > > 
+***    < o(11) : Collector | out : < 1 ; null >, 
+***                          in : (< 1 ; null > < 2 ; null > < 3 ; null >), 
+***                          cnt : 4 > 
+***    < o(12) : Discriminator | controller : o(13), threshold : 4, 
+***                              collector : o(11) > 
+***    < o(13) : Meta | cnt : null, collector : o(11), tag : 0, 
+***                     state : ready, out-pipe : null, in-pipe : null, 
+***                     recognizer : null, fanout : o(1) > 
+***    < o(14) : Controller | 
+***              conf : (< q(0) : Commander | table : < sghtng ; air-act >, 
+***                                           subordinate : q(1) > 
+***                      < q(2) : Commander | table : < sghtng ; air-act >, 
+***                                           subordinate : q(3) >) > 
+***    to o(13) at < 0 ; 0 ; 0 > evals unidentified-object ot 
+***    to o(13) at < 1 ; 2 ; 3 > evals < 2 . 2 . 4 . 3 . 3 . 2 ; 1 > ot 
+***    to o(13) at < 4 ; 5 ; 2 > evals < 1 . 1 ; 1 > ot 
+***    to o(13) at < 7 ; 5 ; 1 > 
+***             evals < 3 . 3 . 3 . 3 . 3 . 4 . 3 . 3 . 3 ; 2 > ot
