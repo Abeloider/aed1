@@ -1,0 +1,6 @@
+red esVacia(meter(A, sacar(sacar(meter(E, colaVacia))))) .
+red esVacia(sacar(meter(I, colaVacia))) .
+red sacar(meter(A, meter(E, meter(I, colaVacia)))) .
+red meter(O, sacar(meter(I, meter(O, sacar(meter(I, meter(O, colaVacia))))))) .
+red cabecera(sacar(meter(A, meter(E, meter(I, colaVacia))))) .
+red cabecera(sacar(meter(I, colaVacia))) .
