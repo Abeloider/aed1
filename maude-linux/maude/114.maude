@@ -230,4 +230,5 @@ fmod COLA is
    eq tamano(colaVacia) = cero .
    eq tamano(meter(v, c)) = sucesor(tamano(c)) .
    
+   
 endfm
