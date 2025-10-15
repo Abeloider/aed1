@@ -1,0 +1,4 @@
+ERROR. Cadena no encontrada: []
+ERROR. Cadena no encontrada: [Todo tiempo pasado fue anterior.]
+ERROR. Cadena no encontrada: [Hoy me ha pasado una cosa...]
+ERROR. Cadena no encontrada: [Solo los genios somos modestos.]
