@@ -1,4 +1,9 @@
-ERROR. Cadena no encontrada: []
-ERROR. Cadena no encontrada: [Todo tiempo pasado fue anterior.]
-ERROR. Cadena no encontrada: [Hoy me ha pasado una cosa...]
-ERROR. Cadena no encontrada: [Solo los genios somos modestos.]
+6/8/2001 12:31:55 ES ANTERIOR A 6/8/2002 9:32:22
+26/6/2003 13:15:1 ES POSTERIOR A 6/8/2001 12:31:55
+26/6/2003 7:5:15 ES ANTERIOR A 26/6/2003 13:15:1
+26/6/2003 7:5:15 ES IGUAL A 26/6/2003 7:5:15
+23/3/2004 15:47:34 ES POSTERIOR A 26/6/2003 7:5:15
+23/3/2004 15:47:35 ES POSTERIOR A 23/3/2004 15:47:34
+23/3/2004 15:43:35 ES ANTERIOR A 23/3/2004 15:47:35
+31/1/2004 18:37:25 ES ANTERIOR A 23/3/2004 15:43:35
+3/2/2004 5:12:4 ES POSTERIOR A 31/1/2004 18:37:25

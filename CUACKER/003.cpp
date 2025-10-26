@@ -2,6 +2,45 @@
 
 using namespace std;
 
+
+//EJERCICIO 001
+string convertir_num_text (int n) {
+ switch(n) {
+        case 1: return "Afirmativo.";
+        case 2: return "Negativo.";
+        case 3: return "Estoy de viaje en el extranjero.";
+        case 4: return "Muchas gracias a todos mis seguidores por vuestro apoyo.";
+        case 5: return "Enhorabuena, campeones!";
+        case 6: return "Ver las novedades en mi pagina web.";
+        case 7: return "Estad atentos a la gran exclusiva del siglo.";
+        case 8: return "La inteligencia me persigue pero yo soy mas rapido.";
+        case 9: return "Si no puedes convencerlos, confundelos.";
+        case 10: return "La politica es el arte de crear problemas.";
+        case 11: return "Donde estan las llaves, matarile, rile, rile...";
+        case 12: return "Si no te gustan mis principios, puedo cambiarlos por otros.";
+        case 13: return "Un dia lei que fumar era malo y deje de fumar.";
+        case 14: return "Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
+        case 15: return "Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
+        case 16: return "Mi vida no es tan glamurosa como mi pagina web aparenta.";
+        case 17: return "Todo tiempo pasado fue anterior.";
+        case 18: return "El azucar no engorda... engorda el que se la toma.";
+        case 19: return "Solo los genios somos modestos.";
+        case 20: return "Nadie sabe escribir tambien como yo.";
+        case 21: return "Si le molesta el mas alla, pongase mas aca.";
+        case 22: return "Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
+        case 23: return "Si el dinero pudiera hablar, me diria adios.";
+        case 24: return "Hoy me ha pasado una cosa tan increible que es mentira.";
+        case 25: return "Si no tienes nada que hacer, por favor no lo hagas en clase.";
+        case 26: return "Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
+        case 27: return "Me despido hasta la proxima. Buen viaje!";
+        case 28: return "Cualquiera se puede equivocar, inclusivo yo.";
+        case 29: return "Estoy en Egipto. Nunca habia visto las piramides tan solas.";
+        case 30: return "El que quiera saber mas, que se vaya a Salamanca.";
+        default: return "Error";
+    }
+}
+
+// EJERCIO 002
 void convertir_text_num( string& s, int& n) {
     if (s == "Afirmativo.")n= 1;
     else if (s == "Negativo.")n= 2;
@@ -36,6 +75,8 @@ void convertir_text_num( string& s, int& n) {
     else s= "ERROR. Cadena no encontrada: [" + s + "]";
 }
 
+// EJERCICIO 003
+
 class Fecha {
 	private:
 		int dia, mes, ano;
@@ -44,25 +85,74 @@ class Fecha {
 		Fecha();
 		bool leer();
 		void escribir();
-		bool es_menor(Fecha &otra);
-		bool es_igual(Fecha &otra);
+        bool esMenor(Fecha &fecha);
+		bool esIgual(Fecha &otra);
 };
-// iniclializamos el constructor a 0 
+// iniclializamos el constructor a 0
 Fecha::Fecha()
 {
     dia=0; mes=0; ano=0; hora=0; minuto=0; segundo=0;
 }
 
-// comprobamos si la fecha esta en el formato correcto 
+// comprobamos si la fecha esta en el formato correcto
 bool Fecha::leer() {
-    cout << dia << "/" << mes << "/" << ano << " ";
-    cout.width(2); cout << hora << ":";
-    cout.width(2); cout << minuto << ":";
-    cout.width(2); cout << segundo;
-
+    char barra1, barra2, puntos1, puntos2;
+   if (!(cin >> dia >> barra1 >> mes >> barra2 >> ano >> hora >> puntos1 >> minuto >> puntos2 >> segundo)) {
+    return false ;
+   } else
+return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':';
 }
 
-6/8/2002 09:32:22
+
+void Fecha::escribir(){
+    cout << dia << '/' << mes << '/' << ano << ' ' <<
+    hora << ':' << minuto << ':' << segundo;
+}
+
+
+bool Fecha::esMenor(Fecha &f) {
+    if (ano != f.ano) return ano < f.ano;
+    if (mes != f.mes) return mes < f.mes;
+    if (dia != f.dia) return dia < f.dia;
+    if (hora != f.hora) return hora < f.hora;
+    if (minuto != f.minuto) return minuto < f.minuto;
+    return segundo < f.segundo;
+}
+
+bool Fecha::esIgual(Fecha & f){
+    if (segundo==f.segundo && minuto==f.minuto && hora==f.hora && dia==f.dia && mes==f.mes && ano==f.ano){
+        return true;
+    } else
+        return false;
+}
+
 
 int main() {
+    int n;
+    cin>>n;
+    Fecha anterior;
+    anterior.leer();
+    for(int i=0; i<n-1; i++){
+        Fecha actual;
+        actual.leer();
+        if(anterior.esIgual(actual)){
+            anterior.escribir();
+            cout<<" ES IGUAL A ";
+            actual.escribir();
+            cout<<endl;
+        }
+        else if(anterior.esMenor(actual)){
+            actual.escribir();
+            cout<<" ES POSTERIOR A ";
+            anterior.escribir();
+            cout<<endl;
+        } else if (actual.esMenor(anterior))
+        {
+            actual.escribir();
+            cout<<" ES ANTERIOR A ";
+            anterior.escribir();
+            cout<<endl;
+        }
+        anterior=actual;
+    }
 }
