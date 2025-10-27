@@ -1,44 +1,46 @@
 #include <iostream>
 
 using namespace std;
-
-
 //EJERCICIO 001
+
 string convertir_num_text (int n) {
- switch(n) {
-        case 1: return "Afirmativo.";
-        case 2: return "Negativo.";
-        case 3: return "Estoy de viaje en el extranjero.";
-        case 4: return "Muchas gracias a todos mis seguidores por vuestro apoyo.";
-        case 5: return "Enhorabuena, campeones!";
-        case 6: return "Ver las novedades en mi pagina web.";
-        case 7: return "Estad atentos a la gran exclusiva del siglo.";
-        case 8: return "La inteligencia me persigue pero yo soy mas rapido.";
-        case 9: return "Si no puedes convencerlos, confundelos.";
-        case 10: return "La politica es el arte de crear problemas.";
-        case 11: return "Donde estan las llaves, matarile, rile, rile...";
-        case 12: return "Si no te gustan mis principios, puedo cambiarlos por otros.";
-        case 13: return "Un dia lei que fumar era malo y deje de fumar.";
-        case 14: return "Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
-        case 15: return "Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
-        case 16: return "Mi vida no es tan glamurosa como mi pagina web aparenta.";
-        case 17: return "Todo tiempo pasado fue anterior.";
-        case 18: return "El azucar no engorda... engorda el que se la toma.";
-        case 19: return "Solo los genios somos modestos.";
-        case 20: return "Nadie sabe escribir tambien como yo.";
-        case 21: return "Si le molesta el mas alla, pongase mas aca.";
-        case 22: return "Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
-        case 23: return "Si el dinero pudiera hablar, me diria adios.";
-        case 24: return "Hoy me ha pasado una cosa tan increible que es mentira.";
-        case 25: return "Si no tienes nada que hacer, por favor no lo hagas en clase.";
-        case 26: return "Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
-        case 27: return "Me despido hasta la proxima. Buen viaje!";
-        case 28: return "Cualquiera se puede equivocar, inclusivo yo.";
-        case 29: return "Estoy en Egipto. Nunca habia visto las piramides tan solas.";
-        case 30: return "El que quiera saber mas, que se vaya a Salamanca.";
-        default: return "Error";
+    static string listaTexto[30];
+    listaTexto[0]="Afirmativo.";
+    listaTexto[1]="Negativo.";
+    listaTexto[2]="Estoy de viaje en el extranjero.";
+    listaTexto[3]="Muchas gracias a todos mis seguidores por vuestro apoyo.";
+    listaTexto[4]="Enhorabuena, campeones!";
+    listaTexto[5]="Ver las novedades en mi pagina web.";
+    listaTexto[6]="Estad atentos a la gran exclusiva del siglo.";
+    listaTexto[7]="La inteligencia me persigue pero yo soy mas rapido.";
+    listaTexto[8]="Si no puedes convencerlos, confundelos.";
+    listaTexto[9]="La politica es el arte de crear problemas.";
+    listaTexto[10]="Donde estan las llaves, matarile, rile, rile...";
+    listaTexto[11]="Si no te gustan mis principios, puedo cambiarlos por otros.";
+    listaTexto[12]="Un dia lei que fumar era malo y deje de fumar.";
+    listaTexto[13]="Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
+    listaTexto[14]="Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
+    listaTexto[15]="Mi vida no es tan glamurosa como mi pagina web aparenta.";
+    listaTexto[16]="Todo tiempo pasado fue anterior.";
+    listaTexto[17]="El azucar no engorda... engorda el que se la toma.";
+    listaTexto[18]="Solo los genios somos modestos.";
+    listaTexto[19]="Nadie sabe escribir tambien como yo.";
+    listaTexto[20]="Si le molesta el mas alla, pongase mas aca.";
+    listaTexto[21]="Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
+    listaTexto[22]="Si el dinero pudiera hablar, me diria adios.";
+    listaTexto[23]="Hoy me ha pasado una cosa tan increible que es mentira.";
+    listaTexto[24]="Si no tienes nada que hacer, por favor no lo hagas en clase.";
+    listaTexto[25]="Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
+    listaTexto[26]="Me despido hasta la proxima. Buen viaje!";
+    listaTexto[27]="Cualquiera se puede equivocar, inclusivo yo.";
+    listaTexto[28]="Estoy en Egipto. Nunca habia visto las piramides tan solas.";
+    listaTexto[29]="El que quiera saber mas, que se vaya a Salamanca.";
+    if (n>=1 && n<30){
+        return listaTexto[n-1];
     }
-}
+    return "Error";
+    }
+    
 
 // EJERCIO 002
 void convertir_text_num( string& s, int& n) {
@@ -96,31 +98,49 @@ Fecha::Fecha()
 
 // comprobamos si la fecha esta en el formato correcto
 bool Fecha::leer() {
-    char barra1, barra2, puntos1, puntos2;
+   char barra1, barra2, puntos1, puntos2;
    if (!(cin >> dia >> barra1 >> mes >> barra2 >> ano >> hora >> puntos1 >> minuto >> puntos2 >> segundo)) {
-    return false ;
+    return false;
    } else
-return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':'; 
+    return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':'; 
 }
 
 // escribimos la fecha 
-void Fecha::escribir(){
-    cout << dia << '/' << mes << '/' << ano << ' ' <<
-    hora << ':' << minuto << ':' << segundo;
+void Fecha::escribir(){ // a la hora de hacer la comprobacion he visto que al poner un digito menor que 10 imprimia directamente el numero y no un 0x x=[1-9]
+    if (dia<10)
+        cout << '0'; 
+        cout << dia << '/';
+    if (mes<10) 
+        cout << '0'; 
+        cout << mes << '/';
+
+    cout << ano << ' '; 
+    
+    if (hora<10) 
+        cout << '0'; 
+        cout << hora << ':';
+    if (minuto<10) 
+        cout << '0'; 
+        cout << minuto << ':';
+    if (segundo<10)
+        cout << '0'; 
+        cout << segundo;
 }
 
 // comprobamos si la fecha es menor 
 // primero comprobamos que no sean iguales y obserbamos que este es moner
 bool Fecha::esMenor(Fecha &f) {
-    if (ano != f.ano) return ano < f.ano; // sera true en caso de que el año sea menor que el año dado 
+    if (ano != f.ano) return ano < f.ano; // f1<f2? si es que si entonces true si no entonces pasamos al mes
     if (mes != f.mes) return mes < f.mes;
     if (dia != f.dia) return dia < f.dia;
     if (hora != f.hora) return hora < f.hora;
     if (minuto != f.minuto) return minuto < f.minuto;
-    return segundo < f.segundo;
+    if (segundo != f.segundo) return segundo < f.segundo;
+    else 
+        return false; 
 }
 
-bool Fecha::esIgual(Fecha & f){
+bool Fecha::esIgual(Fecha &f){
     if (segundo==f.segundo && minuto==f.minuto && hora==f.hora && dia==f.dia && mes==f.mes && ano==f.ano){
         return true;
     } else
@@ -141,36 +161,44 @@ class Cuac {
     bool es_anterior(Cuac &otro);
 };
 
+bool Cuac::leer_mcuac(){
+    cin>>usuario;
+    if (!fecha.leer()) return false;
+    cin.ignore(); // ignora el salto de linea que va despues de la fecha
+    getline (cin, texto); // lee todo el texto hasta presionar enter
+    return true;
+}
 
-
-
-
-int main() {
+bool Cuac::leer_pcuac(){    
+    cin>>usuario;
+    if(!fecha.leer()) return false;
     int n;
     cin>>n;
-    Fecha f1;
-    f1.leer(); // 6/8/2001 12:31:55
-    for(int i=0; i<n-1; i++){
-        Fecha f2;
-        f2.leer(); // 6/8/2002 09:32:22
-        if(f1.esIgual(f2)){
-            f1.escribir();
-            cout<<" ES IGUAL A ";
-            f2.escribir();
-            cout<<endl;
-        }
-        else if(f1.esMenor(f2)){
-            f2.escribir();
-            cout<<" ES POSTERIOR A ";
-            f1.escribir();
-            cout<<endl;
-        } else if (f2.esMenor(f1))
-        {
-            f2.escribir();
-            cout<<" ES ANTERIOR A ";
-            f1.escribir();
-            cout<<endl;
-        }
-        f1=f2;
-    }
+    texto=convertir_num_text(n);
+    return true;
 }
+
+void Cuac::escribir() {
+    cout<<usuario<<' ';
+    fecha.escribir();
+    cout<<"\n\t";
+    cout<<texto<<endl;
+}
+
+bool Cuac::es_anterior(Cuac &otro){
+    return fecha.esMenor(otro.fecha);
+}
+
+int main() {
+    string comando;
+    int num=0;
+    while (cin >> comando) {
+    Cuac cuac;
+    if (comando=="mcuac") cuac.leer_mcuac();
+    else if (comando=="pcuac") cuac.leer_pcuac(); 
+    cout << ++num << " cuac" << endl;
+    cuac.escribir();
+ }
+
+}
+
