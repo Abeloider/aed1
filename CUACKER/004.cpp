@@ -2,6 +2,7 @@
 
 using namespace std;
 
+
 //EJERCICIO 001
 string convertir_num_text (int n) {
  switch(n) {
@@ -95,46 +96,28 @@ Fecha::Fecha()
 
 // comprobamos si la fecha esta en el formato correcto
 bool Fecha::leer() {
-   char barra1, barra2, puntos1, puntos2;
+    char barra1, barra2, puntos1, puntos2;
    if (!(cin >> dia >> barra1 >> mes >> barra2 >> ano >> hora >> puntos1 >> minuto >> puntos2 >> segundo)) {
-    return false;
+    return false ;
    } else
-    return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':'; 
+return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':'; 
 }
 
 // escribimos la fecha 
-void Fecha::escribir(){ // a la hora de hacer la comprobacion he visto que al poner un digito menor que 10 imprimia directamente el numero y no un 0x x=[1-9]
-    if (dia<10) {
-        cout << '0'; 
-    } cout << dia << '/';
-    if (mes<10) {
-        cout << '0'; 
-    } cout << mes << '/';
-    cout << ano << ' '; 
-    
-    if (hora<10) {
-        cout << '0'; 
-    } cout << hora << ':';
-    if (minuto<10) {
-        cout << '0'; 
-    } cout << minuto << ':';
-    if (segundo<10) {
-        cout << '0'; 
-    } cout << segundo;
-
+void Fecha::escribir(){
+    cout << dia << '/' << mes << '/' << ano << ' ' <<
+    hora << ':' << minuto << ':' << segundo;
 }
 
 // comprobamos si la fecha es menor 
 // primero comprobamos que no sean iguales y obserbamos que este es moner
 bool Fecha::esMenor(Fecha &f) {
-    if (ano != f.ano) return ano < f.ano; // f1<f2? si es que si entonces true si no entonces pasamos al mes
+    if (ano != f.ano) return ano < f.ano; // sera true en caso de que el año sea menor que el año dado 
     if (mes != f.mes) return mes < f.mes;
     if (dia != f.dia) return dia < f.dia;
     if (hora != f.hora) return hora < f.hora;
     if (minuto != f.minuto) return minuto < f.minuto;
-    if (segundo != f.segundo) return segundo < f.segundo;
-    else 
-        return false; 
+    return segundo < f.segundo;
 }
 
 bool Fecha::esIgual(Fecha & f){
@@ -143,6 +126,24 @@ bool Fecha::esIgual(Fecha & f){
     } else
         return false;
 }
+
+//EJERCICIO 4 
+
+class Cuac {
+  private:
+    Fecha fecha;
+    string usuario;
+    string texto;
+  public:
+    bool leer_mcuac();
+    bool leer_pcuac();
+    void escribir();
+    bool es_anterior(Cuac &otro);
+};
+
+
+
+
 
 int main() {
     int n;
