@@ -4,43 +4,42 @@ using namespace std;
 //EJERCICIO 001
 
 string convertir_num_text (int n) {
-    static string listaTexto[30];
-    listaTexto[0]="Afirmativo.";
-    listaTexto[1]="Negativo.";
-    listaTexto[2]="Estoy de viaje en el extranjero.";
-    listaTexto[3]="Muchas gracias a todos mis seguidores por vuestro apoyo.";
-    listaTexto[4]="Enhorabuena, campeones!";
-    listaTexto[5]="Ver las novedades en mi pagina web.";
-    listaTexto[6]="Estad atentos a la gran exclusiva del siglo.";
-    listaTexto[7]="La inteligencia me persigue pero yo soy mas rapido.";
-    listaTexto[8]="Si no puedes convencerlos, confundelos.";
-    listaTexto[9]="La politica es el arte de crear problemas.";
-    listaTexto[10]="Donde estan las llaves, matarile, rile, rile...";
-    listaTexto[11]="Si no te gustan mis principios, puedo cambiarlos por otros.";
-    listaTexto[12]="Un dia lei que fumar era malo y deje de fumar.";
-    listaTexto[13]="Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
-    listaTexto[14]="Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
-    listaTexto[15]="Mi vida no es tan glamurosa como mi pagina web aparenta.";
-    listaTexto[16]="Todo tiempo pasado fue anterior.";
-    listaTexto[17]="El azucar no engorda... engorda el que se la toma.";
-    listaTexto[18]="Solo los genios somos modestos.";
-    listaTexto[19]="Nadie sabe escribir tambien como yo.";
-    listaTexto[20]="Si le molesta el mas alla, pongase mas aca.";
-    listaTexto[21]="Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
-    listaTexto[22]="Si el dinero pudiera hablar, me diria adios.";
-    listaTexto[23]="Hoy me ha pasado una cosa tan increible que es mentira.";
-    listaTexto[24]="Si no tienes nada que hacer, por favor no lo hagas en clase.";
-    listaTexto[25]="Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
-    listaTexto[26]="Me despido hasta la proxima. Buen viaje!";
-    listaTexto[27]="Cualquiera se puede equivocar, inclusivo yo.";
-    listaTexto[28]="Estoy en Egipto. Nunca habia visto las piramides tan solas.";
-    listaTexto[29]="El que quiera saber mas, que se vaya a Salamanca.";
-    if (n>=1 && n<30){
-        return listaTexto[n-1];
+    string lista[30];
+    lista[0]="Afirmativo.";
+    lista[1]="Negativo.";
+    lista[2]="Estoy de viaje en el extranjero.";
+    lista[3]="Muchas gracias a todos mis seguidores por vuestro apoyo.";
+    lista[4]="Enhorabuena, campeones!";
+    lista[5]="Ver las novedades en mi pagina web.";
+    lista[6]="Estad atentos a la gran exclusiva del siglo.";
+    lista[7]="La inteligencia me persigue pero yo soy mas rapido.";
+    lista[8]="Si no puedes convencerlos, confundelos.";
+    lista[9]="La politica es el arte de crear problemas.";
+    lista[10]="Donde estan las llaves, matarile, rile, rile...";
+    lista[11]="Si no te gustan mis principios, puedo cambiarlos por otros.";
+    lista[12]="Un dia lei que fumar era malo y deje de fumar.";
+    lista[13]="Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
+    lista[14]="Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
+    lista[15]="Mi vida no es tan glamurosa como mi pagina web aparenta.";
+    lista[16]="Todo tiempo pasado fue anterior.";
+    lista[17]="El azucar no engorda... engorda el que se la toma.";
+    lista[18]="Solo los genios somos modestos.";
+    lista[19]="Nadie sabe escribir tambien como yo.";
+    lista[20]="Si le molesta el mas alla, pongase mas aca.";
+    lista[21]="Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
+    lista[22]="Si el dinero pudiera hablar, me diria adios.";
+    lista[23]="Hoy me ha pasado una cosa tan increible que es mentira.";
+    lista[24]="Si no tienes nada que hacer, por favor no lo hagas en clase.";
+    lista[25]="Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
+    lista[26]="Me despido hasta la proxima. Buen viaje!";
+    lista[27]="Cualquiera se puede equivocar, inclusivo yo.";
+    lista[28]="Estoy en Egipto. Nunca habia visto las piramides tan solas.";
+    lista[29]="El que quiera saber mas, que se vaya a Salamanca.";
+    if (n>=1 && n<=30){
+        return lista[n-1];
     }
     return "Error";
     }
-    
 
 // EJERCIO 002
 void convertir_text_num( string& s, int& n) {
@@ -106,26 +105,19 @@ bool Fecha::leer() {
 }
 
 // escribimos la fecha 
-void Fecha::escribir(){ // a la hora de hacer la comprobacion he visto que al poner un digito menor que 10 imprimia directamente el numero y no un 0x x=[1-9]
-    if (dia<10)
-        cout << '0'; 
-        cout << dia << '/';
-    if (mes<10) 
-        cout << '0'; 
-        cout << mes << '/';
+void Fecha::escribir(){
+    cout << dia << '/' << mes << '/' << ano << ' ';
 
-    cout << ano << ' '; 
-    
-    if (hora<10) 
+   if (hora<10) {
         cout << '0'; 
-        cout << hora << ':';
-    if (minuto<10) 
+    } cout << hora << ':';
+    if (minuto<10) {
         cout << '0'; 
-        cout << minuto << ':';
-    if (segundo<10)
+    } cout << minuto << ':';
+    if (segundo<10) {
         cout << '0'; 
-        cout << segundo;
-}
+    } cout << segundo;}
+
 
 // comprobamos si la fecha es menor 
 // primero comprobamos que no sean iguales y obserbamos que este es moner
@@ -181,7 +173,7 @@ bool Cuac::leer_pcuac(){
 void Cuac::escribir() {
     cout<<usuario<<' ';
     fecha.escribir();
-    cout<<"\n\t";
+    cout<<"\n   "; //comentario: hemoe demorado mucho tiempo ya que en vez de 3 espacios teniamos "\n\t" donde por culpa de eso nos daba error;
     cout<<texto<<endl;
 }
 

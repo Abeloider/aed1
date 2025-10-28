@@ -105,8 +105,17 @@ bool Fecha::leer() {
 
 // escribimos la fecha 
 void Fecha::escribir(){
-    cout << dia << '/' << mes << '/' << ano << ' ' <<
-    hora << ':' << minuto << ':' << segundo;
+    cout << dia << '/' << mes << '/' << ano << ' ';
+
+   if (hora<10) { // nos ha demorado mucho tiempo en encotrar este fallo 
+        cout << '0'; 
+    } cout << hora << ':';
+    if (minuto<10) {
+        cout << '0'; 
+    } cout << minuto << ':';
+    if (segundo<10) {
+        cout << '0'; 
+    } cout << segundo;
 }
 
 // comprobamos si la fecha es menor 
