@@ -1,0 +1,39 @@
+ // copio el repositorio que quiero en la carpeta que quiero 
+
+git clone https://github.com/usuario/repositorio.git
+cd repositorio
+code .
+
+
+para guardar los cambios en el github 
+git add .
+git commit -m "tu mensaje"
+
+
+para modificar los cambios y subirlos a mi carpeta local 
+git push origin main
+
+
+
+esto que coño es
+POR QUE GRITAS SI ME ESTAS GRITANDO ESTAS ESCRIBIENDO EN VOZ ALTA
+
+MARICON EHHHH
+
+PARA COPIAR LOS REPOSITORIOS QUE TENGO EN MI GIT HUB NO ESTOY GRITANDO ESTOY ESCRIBIENOD EN MAYUSSCULAS SOLO 
+NO ES LO MISMO 
+
+MARICON TÚ!🏳️‍🌈🏳️‍🌈
+
+
+
+
+en el cado de que estes en otro main 
+haces primero un 
+git add . 
+git commit "blablabla"
+
+##este ultimo para en vez de guardarlo en el main lo guardas en el origin main donde se modifica el repositorio principal 
+
+git push origin main 
+
