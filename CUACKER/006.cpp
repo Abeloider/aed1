@@ -252,6 +252,74 @@ void Interprete(string comando){
     else if(comando=="tag") procesar_tag();
 }
   
+// EJERCICIO 006: DICCIONARIO DE CUACS CON LISTAS
+class DiccionarioCuacs {
+   private:
+        list<Cuac> lista;
+        int contador;
+   public:
+        DiccionarioCuacs ();
+        void insertar (Cuac nuevo);
+        void last (int N);
+        void follow (string nombre);
+        void date (Fecha f1, Fecha f2);
+        int numElem ()
+            {return contador;}
+};
+
+void DiccionarioCuacs::insertar (Cuac nuevo) {
+    list<Cuac>::iterator it= lista.begin();
+    while (it!=lista.end() && *it<cadena)
+        it++;
+    if (it==lista.end() || *it!=cadena)
+        lista.insert(it, cadena); // n ose si asi vale
+}
+
+
+void DiccionarioCuacs::last (int &n) {
+    cout<<"last "<<n<<endl;
+    list<Cuac>::iterator it=lista.begin();
+    for(it=lista.begin(); it!=lista.end() && n>0; it++, n--){
+        it.escribir();
+        cont++; 
+    }
+    cout << "Total: " << cont << "cuac" << endl; 
+}
+
+void DiccionarioCuacs::follow(string nombre) {
+    list<Cuac>::iterator it = lista.begin();
+    int cont=0; 
+    for (it= lista.begin(); it!=lista.end(); it++) {
+        it.escribir();
+        cont++; 
+    }
+    cout << "Total: " << cont << "cuac" << endl; 
+} // creo que esta mal
+
+Bueno seguimos mañana rey ENGA
+void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
+    list<Cuac>::iterator it = lista.begin();
+    for(it=lista.begin(); it!=lista.end(); it++) {
+        
+    }
+
+}
+
+
+void procesar_pcuac () {
+    _pcuac();
+    dic.inseCuac nuevo;
+    nuevo.leerrtar(nuevo);
+    cout << dic.numElem() << " cuac";
+}
+void procesar_follow ()
+{
+    string nombre;
+    cout << "follow " << nombre << endl;
+    dic.follow(nombre);
+}
+
+
 
 int main() {
    string comando;
