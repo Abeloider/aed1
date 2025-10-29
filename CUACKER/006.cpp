@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <list>
 using namespace std;
 //EJERCICIO 001
 
@@ -147,6 +147,8 @@ class Cuac {
     string usuario;
     string texto;
   public:
+    string getUsuario() { return usuario;}
+    Fecha getFecha() {return fecha;}
     bool leer_mcuac();
     bool leer_pcuac();
     void escribir();
@@ -267,21 +269,26 @@ class DiccionarioCuacs {
             {return contador;}
 };
 
+
+
+
 void DiccionarioCuacs::insertar (Cuac nuevo) {
     list<Cuac>::iterator it= lista.begin();
-    while (it!=lista.end() && *it<cadena)
+    while (it!=lista.end())
         it++;
-    if (it==lista.end() || *it!=cadena)
-        lista.insert(it, cadena); // n ose si asi vale
+    if (it==lista.end())
+        lista.insert(it, nuevo); // nose si asi vale
 }
 
 
-void DiccionarioCuacs::last (int &n) {
+void DiccionarioCuacs::last (int n) {
     cout<<"last "<<n<<endl;
-    list<Cuac>::iterator it=lista.begin();
-    for(it=lista.begin(); it!=lista.end() && n>0; it++, n--){
-        it.escribir();
-        cont++; 
+    int cont=0; 
+    list<Cuac>::iterator it;
+    for (it = lista.begin(); it != lista.end() && cont < n; it++) {
+        cont++;
+        cout << cont << ". ";
+        it->escribir();
     }
     cout << "Total: " << cont << "cuac" << endl; 
 }
@@ -290,43 +297,44 @@ void DiccionarioCuacs::follow(string nombre) {
     list<Cuac>::iterator it = lista.begin();
     int cont=0; 
     for (it= lista.begin(); it!=lista.end(); it++) {
-        it.escribir();
-        cont++; 
+        // ya que necesitamos el valor del usuario y como el usuario esta en privado hemos declarado un metodo getUsuario.
+        if (it->getUsuario() == nombre) { // hago que el it coja el usuario y compruebe si es el mismo usuario encaso de que si:
+            cont++; // sumamos al contador 1 
+            cout << cont << ". "; 
+            it->escribir(); // hago que el it escriba
+        }
     }
     cout << "Total: " << cont << "cuac" << endl; 
-} // creo que esta mal
+}// creo que esta mal
 
-Bueno seguimos mañana rey ENGA
+
+
 void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
     list<Cuac>::iterator it = lista.begin();
+    int cont=0;
     for(it=lista.begin(); it!=lista.end(); it++) {
-        
+    Fecha aux= it->getFecha();
+     if(f1.esMenor(aux)&&aux.esMenor(f2)) {
+        aux.escribir();
+        cont++;
+     }
     }
-
+    cout << "Total: " << cont << "cuac" << endl;
 }
 
-
-void procesar_pcuac () {
-    _pcuac();
-    dic.inseCuac nuevo;
-    nuevo.leerrtar(nuevo);
-    cout << dic.numElem() << " cuac";
+void Interprete2(string comando){
+    if (comando=="pcuac") procesar_pcuac();
+    else if (comando=="mcuac") procesar_mcuac();
+    else if (comando=="last") last();
+    else if(comando=="follow") follow();
+    else if(comando=="date") date();
 }
-void procesar_follow ()
-{
-    string nombre;
-    cout << "follow " << nombre << endl;
-    dic.follow(nombre);
-}
-
+  
 
 
 int main() {
    string comando;
    while (cin >> comando && comando!="exit")
-      Interprete(comando); 
+      Interprete2(comando); 
+
 }
-
-
-
-
