@@ -101,25 +101,25 @@ bool Fecha::leer() {
    if (!(cin >> dia >> barra1 >> mes >> barra2 >> ano >> hora >> puntos1 >> minuto >> puntos2 >> segundo)) {
     return false;
    } else
-    return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':'; 
+    return barra1 =='/' && barra2=='/' && puntos1==':' && puntos2==':';
 }
 
-// escribimos la fecha 
+// escribimos la fecha
 void Fecha::escribir(){
     cout << dia << '/' << mes << '/' << ano << ' ';
 
    if (hora<10) {
-        cout << '0'; 
+        cout << '0';
     } cout << hora << ':';
     if (minuto<10) {
-        cout << '0'; 
+        cout << '0';
     } cout << minuto << ':';
     if (segundo<10) {
-        cout << '0'; 
+        cout << '0';
     } cout << segundo;}
 
 
-// comprobamos si la fecha es menor 
+// comprobamos si la fecha es menor
 // primero comprobamos que no sean iguales y obserbamos que este es moner
 bool Fecha::esMenor(Fecha &f) {
     if (ano != f.ano) return ano < f.ano; // f1<f2? si es que si entonces true si no entonces pasamos al mes
@@ -128,8 +128,8 @@ bool Fecha::esMenor(Fecha &f) {
     if (hora != f.hora) return hora < f.hora;
     if (minuto != f.minuto) return minuto < f.minuto;
     if (segundo != f.segundo) return segundo < f.segundo;
-    else 
-        return false; 
+    else
+        return false;
 }
 
 bool Fecha::esIgual(Fecha &f){
@@ -139,7 +139,7 @@ bool Fecha::esIgual(Fecha &f){
         return false;
 }
 
-//EJERCICIO 4 
+// EJERCICIO 5
 
 class Cuac {
   private:
@@ -147,7 +147,7 @@ class Cuac {
     string usuario;
     string texto;
   public:
-    string getUsuario() { return usuario;}
+    string getUsuario() {return usuario;}
     Fecha getFecha() {return fecha;}
     bool leer_mcuac();
     bool leer_pcuac();
@@ -163,7 +163,7 @@ bool Cuac::leer_mcuac(){
     return true;
 }
 
-bool Cuac::leer_pcuac(){    
+bool Cuac::leer_pcuac(){
     cin>>usuario;
     if(!fecha.leer()) return false;
     int n;
@@ -183,64 +183,127 @@ bool Cuac::es_anterior(Cuac &otro){
     return fecha.esMenor(otro.fecha);
 }
 
+// EJERCICIO 006: DICCIONARIO DE CUACS CON LISTAS
 
-/// EJERCICIO 5: interprete de comandos
-// variables globales
-    int contador= 0; 
+class DiccionarioCuacs {
+   private:
+        list<Cuac> lista;
+        int contador;
+   public:
+        DiccionarioCuacs ();
+        void insertar (Cuac nuevo);
+        void last (int N);
+        void follow (string nombre);
+        void date (Fecha f1, Fecha f2);
+        int numElem ()
+        {return contador;}
+};
+
+// IMPLEMENTAMOS EL CONSTRUCTOR FUERA DE LA CLASE
+DiccionarioCuacs::DiccionarioCuacs() {
+    contador = 0;
+}
+
+
+void DiccionarioCuacs::insertar(Cuac nuevo) {
+    list<Cuac>::iterator itLista = lista.begin();
+
+    while (itLista != lista.end()) {
+        itLista++;
+    }
+    lista.insert(itLista, nuevo);
+    contador++;
+}
+
+
+void DiccionarioCuacs::last (int n) {
+    cout<<"last "<< n <<endl;
+    contador=0;
+    list<Cuac>::iterator it;
+    for (it = lista.begin(); it != lista.end() && contador < n; it++) {
+        contador++;
+        cout << contador << ". ";
+        it->escribir();
+    }
+    cout << "Total: " << contador << " cuac" << endl;
+}
+
+void DiccionarioCuacs::follow(string nombre) {
+    cout<<"follow "<<nombre<<endl;
+    list<Cuac>::iterator it = lista.begin();
+    contador=0;
+    for (it= lista.begin(); it!=lista.end(); it++) {
+        // ya que necesitamos el valor del usuario y como el usuario esta en privado hemos declarado un metodo getUsuario.
+        if (it->getUsuario() == nombre) { // hago que el it coja el usuario y compruebe si es el mismo usuario encaso de que si:
+            contador++; // sumamos al contadorador 1
+            cout << contador << ". ";
+            it->escribir(); // hago que el it escriba
+        }
+    }
+    cout << "Total: " << contador << " cuac" << endl;
+}// creo que esta mal
+
+
+
+void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
+    list<Cuac>::iterator it = lista.begin();
+    contador=0;
+    for(it=lista.begin(); it!=lista.end(); it++) {
+    Fecha aux= it->getFecha();
+     if(f1.esMenor(aux)&&aux.esMenor(f2)) {
+        aux.escribir();
+        contador++;
+     }
+    }
+    cout << "Total: " << contador << " cuac" << endl;
+}
+
+
+
+
+// VARIABLES GLOBALES // ejercicio 5
+    int cont= 0;
     Cuac actual;
+    DiccionarioCuacs diccionario;
 
 void procesar_pcuac(){
     actual.leer_pcuac();
-    contador++;
-    cout<<contador<<" cuac"<<endl;
+    diccionario.insertar(actual);
+    cont++;
+    cout<<cont<<" cuac"<<endl;
 }
 
 void procesar_mcuac(){
     actual.leer_mcuac();
-    contador++;
-    cout<<contador<<" cuac"<<endl;
+    diccionario.insertar(actual);
+    cont++;
+    cout<<cont<<" cuac"<<endl;
 }
 
-void procesar_last() { 
-    int n; 
+void procesar_last() {
+    int n;
     cin >> n; // 5
-    cout << "last " << n << endl;  // last 5
-    cout << "1. "; 
-    actual.escribir();  // 1. RafaelNaval 28/11/2011 11:27:08
-                        // Enhorabuena, campeones!
-    cout << "Total: 1 cuac" << endl;  // Total: 1 cuac
-     
+    diccionario.last(n);
 }
 
-void procesar_follow(){ 
-    string usuario; 
-    cin >> usuario; // Perico
-    cout<<"follow "<< usuario <<endl; // follow Perico
-    cout << "1. "; 
-    actual.escribir();   // 1. RafaelNaval 28/11/2011 11:27:08
-                         // Enhorabuena, campeones!
-    cout<<"Total: 1 cuac"<< endl;
+void procesar_follow(){
+    string usuario;
+    cin >> usuario;
+    diccionario.follow(usuario);
 }
 
 void procesar_date(){
-    Fecha minimo, maximo;
-    minimo.leer();
-    maximo.leer();
-    cout<<"date ";
-    minimo.escribir();
-    cout<<" ";
-    maximo.escribir();
-    cout << endl;
-    cout << "1. "; 
-    actual.escribir();
-    cout<<"Total: 1 cuac" << endl;
+    Fecha f1, f2;
+    f1.leer();
+    f2.leer();
+    diccionario.date(f1, f2);
 }
 
 void procesar_tag(){
     string tag;
     cin>>tag;
     cout<<"tag "<<tag<<endl;
-    cout << "1. "; 
+    cout << "1. ";
     actual.escribir();
     cout<<"Total: 1 cuac"<< endl;
 }
@@ -253,88 +316,10 @@ void Interprete(string comando){
     else if(comando=="date") procesar_date();
     else if(comando=="tag") procesar_tag();
 }
-  
-// EJERCICIO 006: DICCIONARIO DE CUACS CON LISTAS
-class DiccionarioCuacs {
-   private:
-        list<Cuac> lista;
-        int contador;
-   public:
-        DiccionarioCuacs ();
-        void insertar (Cuac nuevo);
-        void last (int N);
-        void follow (string nombre);
-        void date (Fecha f1, Fecha f2);
-        int numElem ()
-            {return contador;}
-};
-
-
-
-
-void DiccionarioCuacs::insertar (Cuac nuevo) {
-    list<Cuac>::iterator it= lista.begin();
-    while (it!=lista.end())
-        it++;
-    if (it==lista.end())
-        lista.insert(it, nuevo); // nose si asi vale
-}
-
-
-void DiccionarioCuacs::last (int n) {
-    cout<<"last "<<n<<endl;
-    int cont=0; 
-    list<Cuac>::iterator it;
-    for (it = lista.begin(); it != lista.end() && cont < n; it++) {
-        cont++;
-        cout << cont << ". ";
-        it->escribir();
-    }
-    cout << "Total: " << cont << "cuac" << endl; 
-}
-
-void DiccionarioCuacs::follow(string nombre) {
-    list<Cuac>::iterator it = lista.begin();
-    int cont=0; 
-    for (it= lista.begin(); it!=lista.end(); it++) {
-        // ya que necesitamos el valor del usuario y como el usuario esta en privado hemos declarado un metodo getUsuario.
-        if (it->getUsuario() == nombre) { // hago que el it coja el usuario y compruebe si es el mismo usuario encaso de que si:
-            cont++; // sumamos al contador 1 
-            cout << cont << ". "; 
-            it->escribir(); // hago que el it escriba
-        }
-    }
-    cout << "Total: " << cont << "cuac" << endl; 
-}// creo que esta mal
-
-
-
-void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
-    list<Cuac>::iterator it = lista.begin();
-    int cont=0;
-    for(it=lista.begin(); it!=lista.end(); it++) {
-    Fecha aux= it->getFecha();
-     if(f1.esMenor(aux)&&aux.esMenor(f2)) {
-        aux.escribir();
-        cont++;
-     }
-    }
-    cout << "Total: " << cont << "cuac" << endl;
-}
-
-void Interprete2(string comando){
-    if (comando=="pcuac") procesar_pcuac();
-    else if (comando=="mcuac") procesar_mcuac();
-    else if (comando=="last") last();
-    else if(comando=="follow") follow();
-    else if(comando=="date") date();
-}
-  
 
 
 int main() {
    string comando;
    while (cin >> comando && comando!="exit")
-      Interprete2(comando); 
-
+      Interprete(comando);
 }

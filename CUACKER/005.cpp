@@ -202,6 +202,7 @@ void procesar_mcuac(){
 void procesar_last() { 
     int n; 
     cin >> n; // 5
+    int total
     cout << "last " << n << endl;  // last 5
     cout << "1. "; 
     actual.escribir();  // 1. RafaelNaval 28/11/2011 11:27:08
