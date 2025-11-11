@@ -37,3 +37,8 @@ git commit "blablabla"
 
 git push origin main 
 
+
+
+// pasos para hacer el make file 
+
+tar -cf archivo.tar *.cpp *.h Makefile 
