@@ -1,4 +1,6 @@
 #include "003.h"
+#include <iostream>
+using namespace std;
 
 // iniclializamos el constructor a 0
 Fecha::Fecha()

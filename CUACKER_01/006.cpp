@@ -208,7 +208,7 @@ DiccionarioCuacs::DiccionarioCuacs() {
 void DiccionarioCuacs::insertar(Cuac nuevo) {
     list<Cuac>::iterator itLista = lista.begin();
 
-    while (itLista != lista.end()) {
+    while (itLista != lista.end() && itLista->es_anterior(nuevo)) {
         itLista++;
     }
     lista.insert(itLista, nuevo);
@@ -246,13 +246,19 @@ void DiccionarioCuacs::follow(string nombre) {
 
 
 void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
+    cout<<"date ";
+    f1.escribir();
+    cout<<" ";
+    f2.escribir();
+    cout<<endl;
     list<Cuac>::iterator it = lista.begin();
     contador=0;
     for(it=lista.begin(); it!=lista.end(); it++) {
     Fecha aux= it->getFecha();
-     if(f1.esMenor(aux)&&aux.esMenor(f2)) {
-        aux.escribir();
+     if((f1.esMenor(aux)&&aux.esMenor(f2))||aux.esIgual(f1)||aux.esIgual(f2)) {
         contador++;
+        cout << contador << ". ";
+        it->escribir();
      }
     }
     cout << "Total: " << contador << " cuac" << endl;
@@ -316,7 +322,6 @@ void Interprete(string comando){
     else if(comando=="date") procesar_date();
     else if(comando=="tag") procesar_tag();
 }
-
 
 int main() {
    string comando;

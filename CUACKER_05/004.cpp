@@ -1,5 +1,6 @@
-#include "004.cpp"
-
+#include "004.h"
+#include <iostream>
+using namespace std;
 
 bool Cuac::leer_mcuac(){
     cin>>usuario;
