@@ -14,7 +14,7 @@ DiccionarioCuacs diccionario;
 void procesar_pcuac(){
     Cuac nuevo; // cramos un cuac nuevo temporal
     nuevo.leer_pcuac(); // leemos el pcuac con todos sus parametors
-    diccionario.insertar(nuevo); // insertamos el cuac en la lista ordenada del diccionario 
+    diccionario.insertar(nuevo); // insertamos el cuac en la lista ordenada del diciocnario 
     cout << diccionario.numElem() << " cuac" << endl; // imprimimos el cuac
 }
 

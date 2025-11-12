@@ -36,6 +36,6 @@ bool Cuac::es_anterior(Cuac &otro){
     if (texto != otro.texto) {
         return texto > otro.texto; 
     }
-    // en el caso de que tambien el texto sea igual entonces por usuario
+    // en el caso de que tambien el texto sea igual entonces por usuairob
     return usuario > otro.usuario;
 }
