@@ -6,7 +6,6 @@
 #include <string>
 using namespace std;
 
-List<Par> T[M];
 
 class Par {
     friend class TablaHash; 
@@ -17,9 +16,9 @@ class Par {
 
 class TablaHash {
     private:
-        int M;
-        int nElem;
-        list<Cuac> t;
+        int M;//Tamaño inicial de la tabla
+        int nElem;//número de elementos en la tabla
+        List<Par> *T;
         int hash(string nombre)
         {
             int suma = 0;
@@ -37,4 +36,7 @@ class TablaHash {
         int numElem() { return nElem; }
 };
 
+void insertar::TablaHash(Cuac nuevo){
+    
+}
 #endif
