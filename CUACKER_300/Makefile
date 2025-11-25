@@ -1,5 +1,5 @@
-a.out: 001_002.o 003.o 004.o 005.o 006.o main.o
-	g++ 001_002.o 003.o 004.o 005.o 006.o main.o
+a.out: 001_002.o 003.o 004.o 005.o 006.o 300.o main.o
+	g++ 001_002.o 003.o 004.o 005.o 006.o 300.o main.o
 
 # ejecutamos las conversiones de texto a num y de num a text
 001_002.o: 001_002.cpp 001_002.h
@@ -18,9 +18,11 @@ a.out: 001_002.o 003.o 004.o 005.o 006.o main.o
 	g++ -c 005.cpp
 
 # DICCIONARIO DE CUACS CON LISTAS (ya no depende de 005.h)
-006.o: 006.cpp 006.h 004.h 003.h 001_002.h
+006.o: 006.cpp 006.h 300.h 004.h 003.h 001_002.h
 	g++ -c 006.cpp
-
+# ARBOLES AVL
+300.o: 300.cpp 300.h 004.h
+	g++ -c 300.cpp
 #MAIN 
-main.o: main.cpp 006.h 005.h 004.h 003.h 001_002.h
+main.o: main.cpp 006.h 005.h 004.h 003.h 001_002.h 
 	g++ -c main.cpp
