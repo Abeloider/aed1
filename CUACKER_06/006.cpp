@@ -9,11 +9,10 @@ DiccionarioCuacs::DiccionarioCuacs() {
 
 void DiccionarioCuacs::insertar(Cuac nuevo) {
     list<Cuac>::iterator itLista = lista.begin();
-    /* a la hora de realizar la prueba no daban las fechas correctas ya que no consideraban el orden 
-     para corregir este error hemos añadido al nuevo.es_anterior(*itLista) con el
-     que avanzamos mientras que el cuac nuevo sea anterior que *itlista
-    */
-     while (itLista != lista.end() && nuevo.es_anterior(*itLista)) {
+    // a la hora de realizar la prueba no me daban las fechas correctas ya que no consideraban el orden 
+    // para corregir este error hemos añadido al nuevo.es_anterior(*itLista) que avanzamos mientras 
+    // que el nuevo sea anterior que *itlista
+    while (itLista != lista.end() && nuevo.es_anterior(*itLista)) {
         itLista++;
     }
     lista.insert(itLista, nuevo);
@@ -35,8 +34,7 @@ void DiccionarioCuacs::last (int n) {
 }
 
 
-// listamos todos los cuacs del usuario
-
+// listamos todos los cuacs del usuario 
 void DiccionarioCuacs::follow(string nombre) {
     cout<<"follow "<<nombre<<endl;
     list<Cuac>::iterator it = lista.begin();
@@ -73,4 +71,3 @@ void DiccionarioCuacs::date(Fecha f1, Fecha f2) {
     }
     cout << "Total: " << count << " cuac" << endl;
 }
-

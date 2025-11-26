@@ -9,7 +9,7 @@ TablaHash::TablaHash() {
 }
 
 int TablaHash::funcionHash(string clave) {
-    unsigned long h = 13; 
+    unsigned long h = 5281; 
     for (int i = 0; i < clave.length(); i++) {
         h = (h * 33) + clave[i];
     }

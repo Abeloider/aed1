@@ -5,10 +5,8 @@
 #include <string>
 using namespace std;
 
-// Forward declaration
 class DiccionarioCuacs;
 
-// Declaración del diccionario global
 extern DiccionarioCuacs dic;
 
 void procesar_pcuac();

@@ -11,16 +11,18 @@ TablaHash::TablaHash() {
 
  //Funcion de dispersion1 
  int TablaHash::funcionHash(string clave) {
-   unsigned int h = 13; // Valor inicial y hacemos que no sea un numero negativo 
+   unsigned int h = 5281; // Valor inicial y hacemos que no sea un numero negativo 
      for (int i = 0; i < clave.length(); i++) { // Recorremos cada caracter
-         h = (h * 33) + clave[i]; // Actualizamos el hash con el caracter actual
+         h = (h * 61) + clave[i]; // Actualizamos el hash con el caracter actual
      }
      return h % M; // Retornamos el indice dentro del tamaño de la tabla
 }
-
 /*
+
+
+
  int TablaHash::funcionHash(string clave) {
-     unsigned int h = 10; //no es numero primo
+     unsigned int h = 13; //no es numero primo
      for (int i = 0; i < clave.length(); i++) {
          h = clave[i] + h;
      } 
@@ -35,8 +37,8 @@ int TablaHash:::funcionHash(string clave) {
     return h % M; 
 }
 */
-// En vez de recorrer toda la tabla buscamos directamente en la lista correspondiente al usuario
-// para ello insertamos el un indice que se calcula gracias a la funcion de dispersion. 
+// En vez de recorrer toda la tabla buscamos directamente la lista que corresponde al usuario
+// para ello insertamos un indice calculado gracias a la funcion de dispersion. 
 void TablaHash::insertar(Cuac nuevo) {
     string usuario = nuevo.getUsuario(); // Obtener el nombre de usuario del cuac como indica en el enunciado
     int indice = funcionHash(usuario); // Calcular el indice usando la funcion hash

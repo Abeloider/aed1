@@ -3,7 +3,7 @@
 
 #include "004.h"
 #include <list>
-#include <algorithm> // Para std::max
+#include <algorithm> // Para max
 
 using namespace std;
 
@@ -20,6 +20,7 @@ class NodoAVL {
     public:
         NodoAVL(Fecha f, Cuac* c);
         ~NodoAVL(); // Destructor para liberar memoria recursivamente
+        void insertarOrdenado(Cuac* c);
 };
 
 // Clase Arbol AVL (Implementacion de Last y Date)
