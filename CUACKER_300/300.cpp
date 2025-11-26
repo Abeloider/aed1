@@ -25,12 +25,12 @@ ArbolAVL::~ArbolAVL() {
     delete raiz;
 }
 
-// devolvemos la altura esta funcion la hemos sacado del tema 3 de teoria
+// devolvemos la altura de un nodo de forma segura
 int ArbolAVL::altura(NodoAVL* nodo) {
     if (nodo == NULL) return -1;
     return nodo->altura;
 }
-// ROTACIONES PARA BALANCEO (sacada tambien del tema 3 de teoria)
+// ROTACIONES PARA BALANCEO
 
 // Rotacion Simple Izquierda (Caso II)
 void ArbolAVL::RSI(NodoAVL* &A) {   
@@ -65,9 +65,8 @@ void ArbolAVL::RDD(NodoAVL* &A) {
     RSD(A);      // Resolvemos caso DD
 }
 
-
 void ArbolAVL::insertar(Cuac* ref) {
-    insertar(raiz, ref);
+    insertar(raiz, ref); // Llamada recursiva pasando por la raiz
 }
 
 // 3.3.3 OPERACION DE INSERCION EN AVL
@@ -104,28 +103,28 @@ void ArbolAVL::insertar(NodoAVL* &A, Cuac* x) {
     }
 }
 
+// tenemos que buscar los cuacs mas nuevos por lo que tenemos que hacer un recorrido inverso
 void ArbolAVL::last(int N) {
     int count = 0;
     cout << "last " << N << endl;
-    recorridoLast(raiz, N, count);
+    recorridoLast(raiz, N, count); // recorrido inverso
     cout << "Total: " << count << " cuac" << endl;
 }
 
-
 void ArbolAVL::recorridoLast(NodoAVL* nodo, int &n, int &count) {
-    if (nodo == NULL || count >= n) return;
-    recorridoLast(nodo->der, n, count);
-    if (count < n) {
-        list<Cuac*>::iterator it;
-        for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) {
-            if (count < n) {
-                count++;
-                cout << count << ". ";
-                (*it)->escribir();
+    if (nodo == NULL || count >= n) return; // Caso base
+    recorridoLast(nodo->der, n, count); // Primero recorremos el subarbol derecho (mas nuevos)
+    if (count < n) { // Si no hemos impreso suficientes cuacs
+        list<Cuac*>::iterator it; 
+        for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) { // recorremos la lista de cuacs
+            if (count < n) { // Si no hemos impreso suficientes cuacs
+                count++; // Incrementamos el contador de cuacs impresos
+                cout << count << ". "; // Imprimimos el número de cuac
+                (*it)->escribir(); // Imprimimos el cuac
             }
         }
     }
-    recorridoLast(nodo->izq, n, count);
+    recorridoLast(nodo->izq, n, count); // alfinal recorremos el subarbol izquierdo (mas viejos)
 }
 
 void ArbolAVL::date(Fecha f1, Fecha f2) {
