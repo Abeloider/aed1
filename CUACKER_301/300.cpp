@@ -151,12 +151,44 @@ void ArbolAVL::recorridoLast(NodoAVL* nodo, int &n, int &count) { // parametros 
     }
     recorridoLast(nodo->izq, n, count); // alfinal recorremos el subarbol izquierdo (mas viejos)
 }
-
-// Metodo donde imprime los cuacs entre dos fechas 
+/*
 void ArbolAVL::date(Fecha f1, Fecha f2) {
-    if (arbol.raiz == NULL) return; // Si el arbol esta vacio no hacemos nada 
-    
+    int count=0;
+    Fecha f=raiz->getFecha();
+    if(f1.esMenor(f)&&f.esMenor(f2)){
+
+    }
+*/
 
 
+void ArbolAVL::date(Fecha f1, Fecha f2) {
+    int count = 0;
+    cout << "date "; 
+    f1.escribir(); 
+    cout << " "; 
+    f2.escribir(); 
+    cout << endl;
+    recorridoDate(raiz, f1, f2, count);
+    cout << "Total: " << count << " cuac" << endl;
+}
 
+void ArbolAVL::recorridoDate(NodoAVL* nodo, Fecha f1, Fecha f2, int &count) {
+    if (nodo == NULL) return;
+    if (nodo->fecha.esMenor(f2)) {
+        recorridoDate(nodo->der, f1, f2, count);
+    }
+    bool mayorIgualF1 = f1.esMenor(nodo->fecha);
+    bool menorIgualF2 = nodo->fecha.esMenor(f2);
+
+    if (mayorIgualF1 && menorIgualF2) {
+        list<Cuac*>::iterator it;
+        for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) {
+            count++;
+            cout << count << ". ";
+            (*it)->escribir();
+        }
+    }
+    if (f1.esMenor(nodo->fecha)) {
+        recorridoDate(nodo->izq, f1, f2, count);
+    }
 }
