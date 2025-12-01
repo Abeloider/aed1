@@ -131,17 +131,21 @@ void ArbolAVL::insertar(NodoAVL* &A, Cuac* x) {
 void ArbolAVL::last(int N) {
     int count = 0;
     cout << "last " << N << endl;
-    recorridoLast(raiz, N, count); // recorrido inverso
+    recorridoLast(raiz, N, count); // llamamos a la funcion recorridoLast
     cout << "Total: " << count << " cuac" << endl;
 
 }
 
+
+
 void ArbolAVL::recorridoLast(NodoAVL* nodo, int &n, int &count) { // parametros nodo, n cuacs a imprimir, count cuacs impresos
     if (nodo == NULL || count >= n) return; // Caso base
-    recorridoLast(nodo->der, n, count); // Primero recorremos el subarbol derecho (mas nuevos)
+    // Primero recorremos el subarbol derecho (mas nuevos)
+    recorridoLast(nodo->der, n, count); 
     if (count < n) { // Si no hemos impreso suficientes cuacs
         list<Cuac*>::iterator it; 
-        for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) { // recorremos la lista de cuacs
+        // recorremos la lista de cuacs
+        for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) { 
             if (count < n) { // Si no hemos impreso suficientes cuacs
                 count++; // Incrementamos el contador de cuacs impresos
                 cout << count << ". "; // Imprimimos el número de cuac
@@ -149,18 +153,12 @@ void ArbolAVL::recorridoLast(NodoAVL* nodo, int &n, int &count) { // parametros 
             }
         }
     }
-    recorridoLast(nodo->izq, n, count); // alfinal recorremos el subarbol izquierdo (mas viejos)
+    // Finalmente recorremos el subarbol izquierdo (mas viejos)
+    recorridoLast(nodo->izq, n, count); 
 }
-/*
-void ArbolAVL::date(Fecha f1, Fecha f2) {
-    int count=0;
-    Fecha f=raiz->getFecha();
-    if(f1.esMenor(f)&&f.esMenor(f2)){
-
-    }
-*/
 
 
+// creamos la funcion date 
 void ArbolAVL::date(Fecha f1, Fecha f2) {
     int count = 0;
     cout << "date "; 
@@ -172,23 +170,25 @@ void ArbolAVL::date(Fecha f1, Fecha f2) {
     cout << "Total: " << count << " cuac" << endl;
 }
 
+// hacemos el recorrido de date
 void ArbolAVL::recorridoDate(NodoAVL* nodo, Fecha f1, Fecha f2, int &count) {
-    if (nodo == NULL) return;
+    if (nodo == NULL) return; // caso base
+    // Si el nodo es menor que f2, exploramos la rama derecha
     if (nodo->fecha.esMenor(f2)) {
         recorridoDate(nodo->der, f1, f2, count);
     }
-    bool mayorIgualF1 = f1.esMenor(nodo->fecha);
-    bool menorIgualF2 = nodo->fecha.esMenor(f2);
-
-    if (mayorIgualF1 && menorIgualF2) {
+    // si el nodo esta entre f1 y f2, lo procesamos 
+    if (!nodo->fecha.esMenor(f1) && !f2.esMenor(nodo->fecha)) { // nodo >= f1 && nodo <= f2
         list<Cuac*>::iterator it;
+        // Recorremos la lista de cuacs en el nodo
         for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) {
             count++;
             cout << count << ". ";
-            (*it)->escribir();
+            (*it)->escribir(); 
         }
     }
+    // Si el nodo es mayor que f1, exploramos la rama izquierda
     if (f1.esMenor(nodo->fecha)) {
-        recorridoDate(nodo->izq, f1, f2, count);
+        recorridoDate(nodo->izq, f1, f2, count); 
     }
 }

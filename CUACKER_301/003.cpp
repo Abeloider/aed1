@@ -20,7 +20,6 @@ bool Fecha::leer() {
 // escribimos la fecha 
 void Fecha::escribir(){
     cout << dia << '/' << mes << '/' << ano << ' ';
-
    if (hora<10) { // nos ha demorado mucho tiempo en encotrar este fallo 
         cout << '0'; 
     } cout << hora << ':';
