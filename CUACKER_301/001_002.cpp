@@ -1,6 +1,7 @@
 #include "001_002.h"
 
 //EJERCICIO 001
+// Funcion que convierte un numero en su texto correspondiente 
 string convertir_num_text (int n) {
  switch(n) {
         case 1: return "Afirmativo.";
@@ -38,6 +39,7 @@ string convertir_num_text (int n) {
 }
 
 // EJERCIO 002
+// Funcion que convierte un texto en su numero correspondiente
 void convertir_text_num( string& s, int& n) {
     if (s == "Afirmativo.")n= 1;
     else if (s == "Negativo.")n= 2;

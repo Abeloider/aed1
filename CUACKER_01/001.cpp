@@ -3,49 +3,47 @@
 using namespace std;
 
 string convertir_num_text (int n) {
-    string lista[30];
-    lista[0]="Afirmativo.";
-    lista[1]="Negativo.";
-    lista[2]="Estoy de viaje en el extranjero.";
-    lista[3]="Muchas gracias a todos mis seguidores por vuestro apoyo.";
-    lista[4]="Enhorabuena, campeones!";
-    lista[5]="Ver las novedades en mi pagina web.";
-    lista[6]="Estad atentos a la gran exclusiva del siglo.";
-    lista[7]="La inteligencia me persigue pero yo soy mas rapido.";
-    lista[8]="Si no puedes convencerlos, confundelos.";
-    lista[9]="La politica es el arte de crear problemas.";
-    lista[10]="Donde estan las llaves, matarile, rile, rile...";
-    lista[11]="Si no te gustan mis principios, puedo cambiarlos por otros.";
-    lista[12]="Un dia lei que fumar era malo y deje de fumar.";
-    lista[13]="Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
-    lista[14]="Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
-    lista[15]="Mi vida no es tan glamurosa como mi pagina web aparenta.";
-    lista[16]="Todo tiempo pasado fue anterior.";
-    lista[17]="El azucar no engorda... engorda el que se la toma.";
-    lista[18]="Solo los genios somos modestos.";
-    lista[19]="Nadie sabe escribir tambien como yo.";
-    lista[20]="Si le molesta el mas alla, pongase mas aca.";
-    lista[21]="Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
-    lista[22]="Si el dinero pudiera hablar, me diria adios.";
-    lista[23]="Hoy me ha pasado una cosa tan increible que es mentira.";
-    lista[24]="Si no tienes nada que hacer, por favor no lo hagas en clase.";
-    lista[25]="Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
-    lista[26]="Me despido hasta la proxima. Buen viaje!";
-    lista[27]="Cualquiera se puede equivocar, inclusivo yo.";
-    lista[28]="Estoy en Egipto. Nunca habia visto las piramides tan solas.";
-    lista[29]="El que quiera saber mas, que se vaya a Salamanca.";
-    if (n>=1 && n<=30){
-        return lista[n-1];
+ switch(n) {
+        case 1: return "Afirmativo.";
+        case 2: return "Negativo.";
+        case 3: return "Estoy de viaje en el extranjero.";
+        case 4: return "Muchas gracias a todos mis seguidores por vuestro apoyo.";
+        case 5: return "Enhorabuena, campeones!";
+        case 6: return "Ver las novedades en mi pagina web.";
+        case 7: return "Estad atentos a la gran exclusiva del siglo.";
+        case 8: return "La inteligencia me persigue pero yo soy mas rapido.";
+        case 9: return "Si no puedes convencerlos, confundelos.";
+        case 10: return "La politica es el arte de crear problemas.";
+        case 11: return "Donde estan las llaves, matarile, rile, rile...";
+        case 12: return "Si no te gustan mis principios, puedo cambiarlos por otros.";
+        case 13: return "Un dia lei que fumar era malo y deje de fumar.";
+        case 14: return "Yo si se lo que es trabajar duro, de verdad, porque lo he visto por ahi.";
+        case 15: return "Hay que trabajar ocho horas y dormir ocho horas, pero no las mismas.";
+        case 16: return "Mi vida no es tan glamurosa como mi pagina web aparenta.";
+        case 17: return "Todo tiempo pasado fue anterior.";
+        case 18: return "El azucar no engorda... engorda el que se la toma.";
+        case 19: return "Solo los genios somos modestos.";
+        case 20: return "Nadie sabe escribir tambien como yo.";
+        case 21: return "Si le molesta el mas alla, pongase mas aca.";
+        case 22: return "Me gustaria ser valiente. Mi dentista asegura que no lo soy.";
+        case 23: return "Si el dinero pudiera hablar, me diria adios.";
+        case 24: return "Hoy me ha pasado una cosa tan increible que es mentira.";
+        case 25: return "Si no tienes nada que hacer, por favor no lo hagas en clase.";
+        case 26: return "Que nadie se vanaglorie de su justa y digna raza, que pudo ser un melon y salio una calabaza.";
+        case 27: return "Me despido hasta la proxima. Buen viaje!";
+        case 28: return "Cualquiera se puede equivocar, inclusivo yo.";
+        case 29: return "Estoy en Egipto. Nunca habia visto las piramides tan solas.";
+        case 30: return "El que quiera saber mas, que se vaya a Salamanca.";
+        default: return "Error";
     }
-    return "Error";
-    }
-    
+}
+
 int main() {
     int entrada;
     cin >> entrada;
     for(int i=0; i<entrada; i++) {
         int n;
-        cin>>n;
+        cin>>n; 
         cout<<convertir_num_text(n)<<endl;
-    }
+    } 
 }

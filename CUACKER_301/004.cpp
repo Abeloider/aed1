@@ -1,7 +1,9 @@
 #include "004.h"
+#include "001_002.h"
 #include <iostream>
 using namespace std;
 
+// Función que lee un mcuac 
 bool Cuac::leer_mcuac(){
     cin>>usuario;
     if (!fecha.leer()) return false;
@@ -10,6 +12,7 @@ bool Cuac::leer_mcuac(){
     return true;
 }
 
+// Función que lee un pcuac
 bool Cuac::leer_pcuac(){    
     cin>>usuario;
     if(!fecha.leer()) return false;
@@ -19,6 +22,7 @@ bool Cuac::leer_pcuac(){
     return true;
 }
 
+// Función que escribe un cuac
 void Cuac::escribir() {
     cout<<usuario<<' ';
     fecha.escribir();

@@ -13,7 +13,7 @@ using namespace std;
 // DEFINICION DE LA TABLA HASH CON LISTAS
 class TablaHash {
     private:
-        static const int M = 5281; // Tamaño de la tabla (numero primo)
+        static const int M = 5381; // Tamaño de la tabla (numero primo)
         list<Cuac> tabla[M]; // Tabla de listas de cuacs
         int nElem; // Numero de elementos en la tabla
         int funcionHash(string clave);

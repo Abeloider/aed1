@@ -5,7 +5,7 @@
 using namespace std;
 
 
-// hemos tenido que rehacer el ejerccio 5 ya que a la hora de compilarlo con el make nos daba error 
+// hemos tenido que rehacer el ejercicio 5 ya que a la hora de compilarlo con el make nos daba error 
 // por lo que aqui esta hecho de otra forma para poder compilarlo y ejecutar el programa    
 // nos hemos dado cuenta que lo hicimos en el anterior ejercicio un poco a la fuerza para que nos diera el resultado correcto
 // este paso nos llevo demasiado tiempo en resolverlo  

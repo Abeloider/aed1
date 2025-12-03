@@ -1,6 +1,7 @@
 #include "001_002.h"
 
 //EJERCICIO 001
+
 string convertir_num_text (int n) {
  switch(n) {
         case 1: return "Afirmativo.";

@@ -12,7 +12,7 @@ using namespace std;
 DiccionarioCuacs diccionario;
 
 void procesar_pcuac(){
-    Cuac nuevo; // cramos un cuac nuevo temporal
+    Cuac nuevo; // creamos un cuac nuevo temporal
     nuevo.leer_pcuac(); // leemos el pcuac con todos sus parametors
     diccionario.insertar(nuevo); // insertamos el cuac en la lista ordenada del diccionario 
     cout << diccionario.numElem() << " cuac" << endl; // imprimimos el cuac

@@ -1,7 +1,7 @@
 #ifndef ARBOL_AVL_H
 #define ARBOL_AVL_H
 
-#include "004.h"
+#include "004.h" // Cuac
 #include <list>
 #include <algorithm> // Para max
 
@@ -44,7 +44,7 @@ class ArbolAVL {
 
     public:
         ArbolAVL();
-        ~ArbolAVL();
+        ~ArbolAVL(); 
         void insertar(Cuac* ref);
         void last(int N);
         void date(Fecha f1, Fecha f2);

@@ -96,7 +96,7 @@ void ArbolAVL::insertar(NodoAVL* &A, Cuac* x) {
     if (A == NULL) {
         A = new NodoAVL(f, x);
     }   
-    // Si la fecha es menor insertamos por la izquierda
+    // Si la fecha es anterior insertamos por la izquierda
     else if (f.esMenor(A->fecha)) { 
         insertar(A->izq, x);
         if (altura(A->izq) - altura(A->der) > 1) {
@@ -109,21 +109,21 @@ void ArbolAVL::insertar(NodoAVL* &A, Cuac* x) {
             A->altura = 1 + max(altura(A->izq), altura(A->der));
         }
     }
-    // Si la fecha es mayor insertamos por la derecha
+    // Si la fecha es posterior insertamos por la derecha
     else if (A->fecha.esMenor(f)){ 
         insertar(A->der, x);
         if (altura(A->der) - altura(A->izq) > 1) {
             if (!x->getFecha().esMenor(A->der->fecha)) 
-                RSD(A); // Caso Der-Der
+                RSD(A); 
             else
-                RDD(A); // Caso Der-Izq
+                RDD(A); 
         }
         else {
             A->altura = 1 + max(altura(A->izq), altura(A->der));
         }
     }
     else { 
-        A->insertarOrdenado(x); // Misma fecha, insertamos en la lista ordenadamente
+        A->insertarOrdenado(x); // Misma fecha, insertamos en la lista
     }
 }
 
@@ -147,8 +147,8 @@ void ArbolAVL::recorridoLast(NodoAVL* nodo, int &n, int &count) { // parametros 
         // recorremos la lista de cuacs
         for (it = nodo->lista.begin(); it != nodo->lista.end(); ++it) { 
             if (count < n) { // Si no hemos impreso suficientes cuacs
-                count++; // Incrementamos el contador de cuacs impresos
-                cout << count << ". "; // Imprimimos el número de cuac
+                count++;
+                cout << count << ". ";
                 (*it)->escribir(); // Imprimimos el cuac
             }
         }

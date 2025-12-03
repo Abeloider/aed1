@@ -10,32 +10,55 @@ TablaHash::TablaHash() {
 }
 
  //Funcion de dispersion1 
- int TablaHash::funcionHash(string clave) {
-   unsigned int h = 5281; // Valor inicial y hacemos que no sea un numero negativo 
+
+int TablaHash::funcionHash(string clave) {
+   unsigned int h = 5381; // Valor inicial y hacemos que no sea un numero negativo 
      for (int i = 0; i < clave.length(); i++) { // Recorremos cada caracter
-         h = (h * 61) + clave[i]; // Actualizamos el hash con el caracter actual
+         h = (h * 33) + clave[i]; // Actualizamos el hash con el caracter actual
      }
      return h % M; // Retornamos el indice dentro del tamaño de la tabla
 }
 /*
 
+int TablaHash::funcionHash(string clave) {
+    unsigned int h = 5381;
+    int aux=0;
+    for (int i = 0; i < clave.length(); i++) {
+        aux=aux+clave[i];
+    } 
+    return aux % M; 
+}
+    
+int TablaHash::funcionHash(string clave) {
+    unsigned int h = 5381;
+    int aux=0;
+    for (int i = 0; i < clave.length(); i++) {
+        aux=aux+clave[i];
+    } 
+    return aux % M; 
+}
 
 
- int TablaHash::funcionHash(string clave) {
-     unsigned int h = 13; //no es numero primo
+// muy mala
+int TablaHash::funcionHash(string clave) {
+     unsigned int h = 5381; 
      for (int i = 0; i < clave.length(); i++) {
-         h = clave[i] + h;
+         h = clave[i];
      } 
      return h % M; 
  }
 
-int TablaHash:::funcionHash(string clave) {
-    unsigned int h = 5003;
-    for (int i = 0; i < clave.length(); i++) {
-        h = clave[i] + M;
-    } 
-    return h % M; 
-}
+ // peor aun
+ int TablaHash::funcionHash(string clave) {
+     unsigned int h = 13; 
+     for (int i = 0; i < clave.length(); i++) {
+         h = h;
+     } 
+     return h % M; 
+ } 
+
+// suma 
+
 */
 // En vez de recorrer toda la tabla buscamos directamente la lista que corresponde al usuario
 // para ello insertamos un indice calculado gracias a la funcion de dispersion. 

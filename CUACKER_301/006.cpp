@@ -1,5 +1,4 @@
 #include "006.h"
-#include "005.h" 
 #include <iostream>
 
 using namespace std;
@@ -8,16 +7,45 @@ TablaHash::TablaHash() {
     nElem = 0;
 }
 
-int TablaHash::funcionHash(string clave) {
-    unsigned long h = 5281; 
+ //Funcion de dispersion1 
+ int TablaHash::funcionHash(string clave) {
+   unsigned int h = 5381; // Valor inicial y que no sea negativo
+     for (int i = 0; i < clave.length(); i++) { // Recorremos carácteres
+         h = (h * 33) + clave[i]; // Actualizamos
+     }
+     return h % M; // Retornamos el indice dentro del tamaño de la tabla
+}
+/*
+// muy mala
+ int TablaHash::funcionHash(string clave) {
+     unsigned int h = 5381; 
+     for (int i = 0; i < clave.length(); i++) {
+         h = clave[i];
+     } 
+     return h % M; 
+ }
+
+ // peor aun
+ int TablaHash::funcionHash(string clave) {
+     unsigned int h = 13; 
+     for (int i = 0; i < clave.length(); i++) {
+         h = h;
+     } 
+     return h % M; 
+ } 
+
+// suma 
+int TablaHash:::funcionHash(string clave) {
+    unsigned int h = 5381;
     for (int i = 0; i < clave.length(); i++) {
-        h = (h * 33) + clave[i];
-    }
+        h = clave[i] + M;
+    } 
     return h % M; 
 }
-// tenemos que modificar el metodo insertar para que el arbol almacene punteros a loc cuacs de la tabla
-// por lo que ahora el metodo insertar devuelve un puntero al cuac insertado 
 
+*/
+
+// insertar un cuac en la tabla hash y devolver un puntero al cuac insertado
 Cuac* TablaHash::insertar(Cuac nuevo) {
     string usuario = nuevo.getUsuario(); // Obtener el nombre de usuario del cuac como indica en el enunciado
     int indice = funcionHash(usuario);  // Calcular el indice usando la funcion hash
@@ -32,8 +60,9 @@ Cuac* TablaHash::insertar(Cuac nuevo) {
     return &(*itNuevo);
 }
 
+// consultar los cuacs de un usuario
 void TablaHash::consultar(string nombre) {
-    cout << "follow " << nombre << endl;
+    cout << "follow " << nombre << endl; 
     int indice = funcionHash(nombre); // Calcular el indice usando la funcion hash
     int count = 0;
     list<Cuac>::iterator it;
@@ -41,7 +70,7 @@ void TablaHash::consultar(string nombre) {
         if (it->getUsuario() == nombre) {
             count++;
             cout << count << ". ";
-            it->escribir();
+            it->escribir(); // Imprimimos el cuac
         }
     }
     cout << "Total: " << count << " cuac" << endl;

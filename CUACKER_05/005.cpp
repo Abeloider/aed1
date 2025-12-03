@@ -71,4 +71,3 @@ void Interprete(string comando){
     else if(comando=="date") procesar_date();
     else if(comando=="tag") procesar_tag();
 }
-

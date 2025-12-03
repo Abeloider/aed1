@@ -10,7 +10,7 @@ using namespace std;
 
 class TablaHash {
     private:
-        static const int M = 5281; // definimos el tamaño de la tabla hash
+        static const int M = 5381; // definimos el tamaño de la tabla hash
         // Usamos dispersion abierta
         // Cada entrada de la tabla es una lista de Cuacs
         list<Cuac> tabla[M]; 

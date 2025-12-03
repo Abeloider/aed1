@@ -1,8 +1,7 @@
 #ifndef CUAC_H
 #define CUAC_H
 
-#include "001_002.h"
-#include "003.h"
+#include "003.h" // Fecha
 #include <string>
 #include <iostream>
 
@@ -16,8 +15,8 @@ class Cuac {
     string usuario;
     string texto;
   public:
-    string getUsuario() {return usuario;} // añadimos metodso get para poder usarlos en el ejercicio 6
-    Fecha getFecha() {return fecha;} // añadimos metodso get para poder usarlos en el ejercicio 6
+    string getUsuario() {return usuario;} // añadimos metodo get para poder usarlos en el ejercicio 6
+    Fecha getFecha() {return fecha;} // añadimos metodo get para poder usarlos en el ejercicio 6
     string getTexto() {return texto;} // casos en los que los textos 
     bool leer_mcuac();
     bool leer_pcuac();

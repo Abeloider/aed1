@@ -9,7 +9,6 @@ using namespace std;
 class DiccionarioCuacs;
 
 // Declaración del diccionario global
-extern DiccionarioCuacs dic;
 
 void procesar_pcuac();
 void procesar_mcuac();

@@ -38,7 +38,7 @@ string convertir_num_text (int n) {
 }
 
 // EJERCIO 002
-void convertir_text_num( string& s, int& n) {
+void convertir_text_num(string& s, int& n) {
     if (s == "Afirmativo.")n= 1;
     else if (s == "Negativo.")n= 2;
     else if (s == "Estoy de viaje en el extranjero.")n= 3;
