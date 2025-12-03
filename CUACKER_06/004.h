@@ -16,8 +16,8 @@ class Cuac {
     string usuario;
     string texto;
   public:
-    string getUsuario() {return usuario;} // añadimos metodso get para poder usarlos en el ejercicio 6
-    Fecha getFecha() {return fecha;} // añadimos metodso get para poder usarlos en el ejercicio 6
+    string getUsuario() {return usuario;} // añadimos metodo get para poder usarlos en el ejercicio 6
+    Fecha getFecha() {return fecha;} // añadimos metodo get para poder usarlos en el ejercicio 6
     string getTexto() {return texto;} // casos en los que los textos 
     bool leer_mcuac();
     bool leer_pcuac();

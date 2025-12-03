@@ -7,38 +7,33 @@ TablaHash::TablaHash() {
     nElem = 0;
 }
 
- //Funcion de dispersion1 
- int TablaHash::funcionHash(string clave) {
-   unsigned int h = 5381; // Valor inicial y que no sea negativo
-     for (int i = 0; i < clave.length(); i++) { // Recorremos carácteres
-         h = (h * 33) + clave[i]; // Actualizamos
+//Funcion de dispersion1 
+int TablaHash::funcionHash(string clave) { 
+   unsigned int h = 5381; // Valor inicial y hacemos que no sea un numero negativo 
+     for (int i = 0; i < clave.length(); i++) { // Recorremos cada caracter
+         h = (h * 33) + clave[i]; // Actualizamos el hash con el caracter actual
      }
      return h % M; // Retornamos el indice dentro del tamaño de la tabla
 }
+
 /*
-// muy mala
- int TablaHash::funcionHash(string clave) {
-     unsigned int h = 5381; 
-     for (int i = 0; i < clave.length(); i++) {
-         h = clave[i];
-     } 
-     return h % M; 
- }
+metodo de djb2
 
- // peor aun
- int TablaHash::funcionHash(string clave) {
-     unsigned int h = 13; 
-     for (int i = 0; i < clave.length(); i++) {
-         h = h;
-     } 
-     return h % M; 
- } 
+// metodo de suma posicioinal con exponente
+int TablaHash::funcionHash(string clave) {
+   unsigned int h=0; 
+   int E=33; 
+     for (int i = 0; i < clave.length(); i++) { 
+         h = h*E + clave[i];
+     }
+     return h % M;
+}
 
-// suma 
-int TablaHash:::funcionHash(string clave) {
-    unsigned int h = 5381;
+// metodo de suma simple
+int TablaHash::funcionHash(string clave) {
+    unsigned int h=0;
     for (int i = 0; i < clave.length(); i++) {
-        h = clave[i] + M;
+        h+=clave[i];
     } 
     return h % M; 
 }

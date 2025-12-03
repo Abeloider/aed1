@@ -26,7 +26,7 @@ bool Cuac::leer_pcuac(){
 void Cuac::escribir() {
     cout<<usuario<<' ';
     fecha.escribir();
-    cout<<"\n   "; //comentario: hemoe demorado mucho tiempo ya que en vez de 3 espacios teniamos "\n\t" donde por culpa de eso nos daba error;
+    cout<<"\n   "; //nos ha llevado tiempo ya que en vez de 3 espacios teniamos "\n\t" donde por culpa de eso nos daba error;
     cout<<texto<<endl;
 }
 

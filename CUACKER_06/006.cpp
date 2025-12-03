@@ -41,10 +41,10 @@ void DiccionarioCuacs::follow(string nombre) {
     int count=0;
     for (it= lista.begin(); it!=lista.end(); it++) {
         // ya que necesitamos el valor del usuario y como el usuario esta en privado hemos declarado un metodo getUsuario.
-        if (it->getUsuario() == nombre) { // hago que el it coja el usuario y compruebe si es el mismo usuario encaso de que si:
-            count++; // sumamos al contadorador 1
+        if (it->getUsuario() == nombre) { // hago que el it coja el usuario y compruebe si es el mismo usuario en caso de que si:
+            count++; // sumamos al contador 1
             cout << count << ". ";
-            it->escribir(); // hago que el it escriba
+            it->escribir();
         }
     }
     cout << "Total: " << count << " cuac" << endl;

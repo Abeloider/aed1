@@ -38,8 +38,8 @@ class ArbolAVL {
         void RDI(NodoAVL* &nodo); // Rotacion Doble Izquierda ID
         void RDD(NodoAVL* &nodo); // Rotacion Doble Derecha DI
         // Recorridos para operaciones
-        void recorridoLast(NodoAVL* nodo, int &n, int &total);
-        void recorridoDate(NodoAVL* nodo, Fecha f1, Fecha f2, int &count);
+        void recorridoLast(NodoAVL* nodo, int &n, int &total); // Recorrido inverso para last
+        void recorridoDate(NodoAVL* nodo, Fecha f1, Fecha f2, int &count); // Recorrido para date
 
 
     public:
