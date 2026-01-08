@@ -1,5 +1,6 @@
+#include "Interprete.h"
 #include <iostream>
-#include "005.h"
+
 using namespace std;
 
 int main() {
@@ -7,4 +8,3 @@ int main() {
    while (cin >> comando && comando!="exit")
       Interprete(comando);
 }
-

@@ -15,5 +15,4 @@ class Fecha {
 		bool esIgual(Fecha &otra);
 };
 
-
 #endif
